@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.RegalarminfoMapper">
+	<select id="findObject" resultType="Regalarminfo">
+	select a.*,b.reg_Name from `${dBname}`.regalarminfo a
+	left join `${dBname}`.reg b on a.reg_id=b.reg_id
+	<where>
+	1=1
+	<if test="regId!=null">
+	and a.reg_id=#{regId}
+	</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+      </if>
+	</select>
+	<select id="findCountById" resultType="int">
+	SELECT COUNT(*) FROM `${dBname}`.regalarminfo
+	<where>
+		id=#{id}
+	</where>
+	</select>
+	<select id="getRowCount" resultType="int">
+select count(*) from `${dBname}`.regalarminfo 
+	 <where>
+	 1=1
+	 <if test="regId!=null">
+	and reg_id=#{regId}
+	</if>
+	 </where>
+	 </select>
+	 <insert id="insertObject">
+	 insert into `${dBname}`.regalarminfo (reg_id,regname,value_min,value_max,and_or
+	 ,alarm_level,alarmtype,alarmexplain,instructions_id) values (#{regalarminfo.regId},#{regalarminfo.regname},#{regalarminfo.valueMin},
+	 #{regalarminfo.valueMax},#{regalarminfo.andOr},#{regalarminfo.alarmLevel},
+	 #{regalarminfo.alarmtype},#{regalarminfo.alarmexplain},#{regalarminfo.instructionsId})
+	 
+	 </insert>
+	 <insert id="insertObjectByList">
+	 insert into `${dBname}`.regalarminfo (reg_id,regname,value_min,value_max,and_or
+	 ,alarm_level,alarmtype,alarmexplain,instructions_id) values
+	 <foreach collection="regalarminfoslist" item="regalarminfo" separator=",">
+	 (#{regId},#{regalarminfo.regname}, #{regalarminfo.valueMin},#{regalarminfo.valueMax},#{regalarminfo.andOr},#{regalarminfo.alarmLevel},
+	 #{regalarminfo.alarmtype},#{regalarminfo.alarmexplain},#{regalarminfo.instructionsId})
+	 </foreach>
+	 </insert>
+	 <delete id="deleteObjectByRegIdlist">
+	 delete from `${dBname}`.regalarminfo 
+	 <where>
+	reg_id in  <foreach collection="regIdlist" open="("
+                close=")" separator="," item="regId">
+                #{regId}
+                </foreach>
+	</where>
+	 </delete>
+	 <delete id="deleteObjectByIds">
+	 delete from `${dBname}`.regalarminfo 
+	 <where>
+	id in 
+	 <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+         </where>
+	 </delete>
+	  <delete id="deleteObjectByRegIds">
+	 delete from `${dBname}`.regalarminfo 
+	 <where>
+	reg_id in 
+	 <foreach collection="regIds" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+         </where>
+	 </delete>
+	 <update id="updateObject">
+	 update `${dBname}`.regalarminfo
+	 <set>
+	reg_id =#{regalarminfo.regId},
+		 regname= #{regalarminfo.regname},
+	value_min =#{regalarminfo.valueMin},
+	value_max =#{regalarminfo.valueMax},
+	and_or =#{regalarminfo.andOr},
+	alarm_level =#{regalarminfo.alarmLevel},
+	alarmtype =#{regalarminfo.alarmtype},
+	alarmexplain = #{regalarminfo.alarmexplain},
+	instructions_id = #{regalarminfo.instructionsId}
+	 </set>
+	<where>
+	id=#{regalarminfo.id}
+	</where>
+	 </update>
+</mapper>

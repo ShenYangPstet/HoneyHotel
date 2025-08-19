@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.SubinfoMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Subinfo">
+	select a.*,b.subname,c.imgurl from `${dBname}`.subinfo a left join `${dBname}`.sub b
+	on a.subid=b.subid LEFT JOIN `${dBname}`.images c ON a.url = c.imgid
+	<where>
+		<if test="subid!=null">
+		a.subid=#{subid}
+		</if>
+	</where>
+	<if test="pageSize!=null">
+	limit #{startIndex},#{pageSize}
+	</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.subinfo
+	<where>
+		<if test="subid!=null">
+		subid=#{subid}
+		</if>
+	</where>
+	</select>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.subinfo
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+	</delete>
+	<insert id="insertObject">
+	insert into `${dBname}`.subinfo (subid,value_type,value,value_min,
+	value_max,and_or,text,url) values (#{subinfo.subid},#{subinfo.valueType},
+	#{subinfo.value},#{subinfo.valueMin},#{subinfo.valueMax},#{subinfo.andOr},
+	#{subinfo.text},#{subinfo.url})
+	</insert>
+	<update id="updateObject">
+	update `${dBname}`.subinfo 
+	<set>
+	<if test="subinfo.subid!=null">
+	              subid=#{subinfo.subid},
+	</if>
+	              value_type=#{subinfo.valueType},
+	              value=#{subinfo.value},
+	              value_min=#{subinfo.valueMin},
+	              value_max=#{subinfo.valueMax},
+	              and_or=#{subinfo.andOr},
+	              text=#{subinfo.text},
+					url=#{subinfo.url},
+				id=#{subinfo.id}	
+	</set>
+		<where>
+		id=#{subinfo.id}
+		</where>
+	</update>
+</mapper>

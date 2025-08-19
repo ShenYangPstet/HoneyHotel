@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AssetstypeMapper">
+<select id="findObjectByName" resultType="com.photonstudio.pojo.Assetstype">
+select * from `${dBname}`.assetstype 
+ <where>
+		<if test="assetstypename!=null and assetstypename!=''">
+		 assetstypename like concat("%",#{assetstypename},"%")
+		</if>
+		</where>
+		<if test="pageSize!=null and pageSize!=''">
+          limit #{startIndex},#{pageSize}
+		</if>
+</select>
+<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM ${dBname}.assetstype
+  <where>
+		<if test="assetstypename!=null and assetstypename!=''">
+		 assetstypename like concat("%",#{assetstypename},"%")
+		</if>
+		</where>
+</select>
+<select id="findObjectById" resultType="int">
+	SELECT COUNT(*) FROM ${dBname}.assetstype
+	<where>
+	id=#{id}
+	</where>
+</select>
+<insert id="insertObject">
+ 	 insert into `${dBname}`.assetstype  (id,assetstypename,explain)
+ 	   values (#{assetstype.id},#{assetstype.assetstypename},#{assetstype.explain}
+ 	  );
+ </insert>
+ 	<delete id="deleteObjectById">
+	delete from `${dBname}`.assetstype 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+ </delete>
+ <update id="updateObject">
+ 	update `${dBname}`.assetstype 
+ 	<set>
+               assetstypename=#{assetstype.assetstypename},
+                  explain=#{assetstype.explain},
+          </set>
+          where id=#{assetstype.id} 
+ </update>
+ 	
+</mapper>

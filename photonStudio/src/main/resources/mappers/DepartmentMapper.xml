@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.DepartmentMapper">
+<select id="findObject" resultType="Department">
+ select a.* ,b.departmentname as fudepartmentname from `${dBname}`.department a
+ left join `${dBname}`.department b on a.fuid=b.departmentid
+	 <where>
+	 <if test="fuid!=null and fuid!=''">
+	  a.fuid=#{fuid} 
+	 </if>
+	 </where>
+	 <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+</select>
+<select id="findChildrenId" resultType="int">
+ select departmentid from `${dBname}`.department
+	 <where>
+	  fuid=#{departmentid} 
+	 </where>
+</select>
+<select id="getRowCount" resultType="int">
+select count(*) from `${dBname}`.department
+</select>
+<insert id="insertObject">
+insert into `${dBname}`.department (departmentname,fuid,departmentExplain) values 
+(#{department.departmentname},#{department.fuid},#{department.departmentExplain})
+</insert>
+<delete id="deleteObjectById">
+delete from `${dBname}`.department
+ 	<where>
+ 		departmentid = #{departmentid}
+ 	</where>
+</delete>
+<update id="updateObject">
+	update `${dBname}`.department 
+	<set>
+	<if test="department.departmentname!=null and department.departmentname!=''">
+	departmentname=#{department.departmentname},
+	</if>
+	<if test="department.fuid!=null and department.fuid!=''">
+	fuid=#{department.fuid},
+	</if>
+	<if test="department.departmentExplain!=null and department.departmentExplain!=''">
+	departmentExplain=#{department.departmentExplain},
+	</if>
+	departmentid=#{department.departmentid}
+	</set>
+	<where>
+	departmentid=#{department.departmentid}
+	</where>
+</update>
+</mapper>

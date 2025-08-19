@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsLdRwMapper">
+  <select id="findObject" resultType="QsLdRw">
+	select * from `${dBname}`.qs_ld_rw 
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+  </select>
+  <select id="getRowCount" resultType="int">
+  select count(*) from `${dBname}`.qs_ld_rw 
+  </select>
+  <select id="findObjectById" resultType="int">
+  select count(*) from `${dBname}`.qs_ld_rw 
+  <where>
+  	ld_rw_id=#{id}
+  </where>
+  </select>
+  <select id="findObjectByldRwId" resultType="QsLdRw">
+  select * from `${dBname}`.qs_ld_rw where ld_rw_id=#{ldRwId}
+  </select>
+  <insert id="insertObject">
+  insert into `${dBname}`.qs_ld_rw (ld_rw_name,ld_rw_miaoshu,rw_type,dr_type_id,
+  starttime,endtime,issuspend, suspendtime) values 
+  (#{qsLdRw.ldRwName},#{qsLdRw.ldRwMiaoshu},#{qsLdRw.rwType},#{qsLdRw.drTypeId},
+  #{qsLdRw.starttime},#{qsLdRw.endtime},#{qsLdRw.issuspend},#{qsLdRw.suspendtime})
+  </insert>
+  <delete id="deleteObjectById">
+  	delete from `${dBname}`.qs_ld_rw 
+  	<where>
+  	ld_rw_id in 
+  	   <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+  	</where>
+  </delete>
+  <update id="updateObject">
+  update `${dBname}`.qs_ld_rw 
+  <set>
+  	<if test="qsLdRw.ldRwName!=null and qsLdRw.ldRwName!=''">
+  	ld_rw_name=#{qsLdRw.ldRwName},
+  	</if>
+  	<if test="qsLdRw.ldRwMiaoshu!=null and qsLdRw.ldRwMiaoshu!=''">
+  	ld_rw_miaoshu=#{qsLdRw.ldRwMiaoshu},
+  	</if>
+  	<if test="qsLdRw.rwType!=null">
+  	rw_type=#{qsLdRw.rwType},
+  	</if>
+  	<if test="qsLdRw.drTypeId!=null">
+  	dr_typeId=#{qsLdRw.drTypeId},
+  	</if>
+  	<if test="qsLdRw.starttime!=null">
+  	starttime=#{qsLdRw.starttime},
+  	</if>
+  	<if test="qsLdRw.endtime!=null">
+  	endtime=#{qsLdRw.endtime},
+  	</if>
+  	<if test="qsLdRw.issuspend!=null">
+  	issuspend=#{qsLdRw.issuspend},
+  	</if>
+  	<if test="qsLdRw.suspendtime!=null">
+  	suspendtime=#{qsLdRw.suspendtime},
+  	</if>
+  	ld_rw_id=#{qsLdRw.ldRwId}
+  </set>
+  <where>
+  ld_rw_id=#{qsLdRw.ldRwId}
+  </where>
+  </update>
+  <select id="findMoshiObject" resultType="QsLdRw">
+	select * from `${dBname}`.qs_ld_rw 
+	<where>
+	 rw_type=#{rwType}
+	</where>
+  </select>
+  <select id="findObjectByIssuspend" resultType="QsLdRw" >
+    select * from `${dBname}`.qs_ld_rw where issuspend=0
+  </select>
+  <select id="findObjectByIds" resultType="QsLdRw">
+  select * from `${dBname}`.qs_ld_rw 
+  <where>
+  	ld_rw_id in 
+  	   <foreach collection="ldrwids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+  	</where> 
+  </select>
+</mapper>

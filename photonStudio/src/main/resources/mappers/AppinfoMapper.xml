@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AppinfoMapper">
+  <select id="findObject" resultType="com.photonstudio.pojo.Appinfo">
+   select * from `${dBname}`.appinfo
+   limit #{startIndex},#{pageSize}
+  </select>
+  <select id="findAppinfo" resultType="Appinfo">
+  select * from `${dBname}`.appinfo
+  </select>
+   <select id="findObjectById" resultType="com.photonstudio.pojo.Appinfo">
+   select * from `${dBname}`.appinfo
+   <where>
+   	appid=#{appid}
+   </where>
+  </select>
+   <delete id="deleteObject">
+   delete from `${dBname}`.appinfo 
+   <where>
+   appid=#{appid}
+    </where>
+   </delete>
+   <select id="getRowCount" resultType="int">
+   SELECT COUNT(*) FROM ${dBname}.appinfo
+   
+   </select>
+ 	<insert id="insertObject">
+ 	insert into ${dBname}.appinfo  (appid,appname,applogotype,applogotext,applogoimg,
+ 	apppic,appman,apparea,appdate) values (#{appinfo.appid},#{appinfo.appname},
+ 	#{appinfo.applogotype},#{appinfo.applogotext},#{appinfo.applogoimg},#{appinfo.apppic},
+ 	#{appinfo.appman},#{appinfo.apparea},#{appinfo.appdate});
+ 	</insert>
+ 	<update id="updateObject">
+ 	update `${dBname}`.appinfo 
+ 	<set>
+               appname=#{appinfo.appname},
+               applogoimg=#{appinfo.applogoimg},
+ 			applogotype=#{appinfo.applogotype},
+ 			applogotext=#{appinfo.applogotext},
+ 			apppic=#{appinfo.apppic},
+ 			appman=#{appinfo.appman},
+ 			apparea=#{appinfo.apparea},
+ 			appdate=#{appinfo.appdate}
+ 			
+ 	</set>
+ 	<where>
+ 			appid=#{appinfo.appid}
+ 	</where>
+ 	</update>
+</mapper>

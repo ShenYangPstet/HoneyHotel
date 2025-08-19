@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QueryresultinfoMapper">
+	<select id="findObjectByResultId" resultType="Queryresultinfo">
+		select * from `${dBname}`.queryresultinfo
+		<where>
+			<if test="resultId!=null">
+				resultId=#{resultId}
+			</if>
+		</where>
+	</select>
+	<select id="findObject" resultType="Queryresultinfo">
+	select a.* ,b.resultName from `${dBname}`.queryresultinfo a
+	left join `${dBname}`.queryresult b on a.resultId=b.resultId
+	<where>
+	1=1
+	<if test="resultId!=null">
+	and a.resultId=#{resultId}
+	</if>
+	</where>
+	<if test="pageSize!=null">
+			limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+		select count(*) from `${dBname}`.queryresultinfo
+		<where>
+			1=1
+			<if test="resultId!=null">
+				and resultId=#{resultId}
+			</if>
+		</where>
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.queryresultinfo (resultShowName,resultDbName,resulttype,resultId)
+	 values (#{queryresultinfo.resultShowName},#{queryresultinfo.resultDbName},
+	 #{queryresultinfo.resulttype},#{queryresultinfo.resultId})
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.queryresultinfo 
+	<where>
+			id=#{id}
+		</where>
+	</delete>
+	<delete id="deleteObjectByResultId">
+	delete from `${dBname}`.queryresultinfo 
+	<where>
+			resultId=#{resultId}
+		</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.queryresultinfo 
+	<set>
+	resultShowName=#{queryresultinfo.resultShowName},
+	resultDbName=#{queryresultinfo.resultDbName},
+	resulttype=#{queryresultinfo.resulttype},
+	resultId=#{queryresultinfo.resultId}
+	</set>
+	<where>
+	id=#{queryresultinfo.id}
+	</where>
+	</update>
+</mapper>

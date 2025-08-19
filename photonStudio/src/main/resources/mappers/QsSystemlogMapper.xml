@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsSystemlogMapper">
+    <insert id="SaveLog">
+          insert into `${dBname}`.qs_systemlog(user_code,ip,type,parameter,state,operation_time,method,operation_type,operation_describe)
+          values (#{qsSystemlog.userCode},#{qsSystemlog.ip},#{qsSystemlog.type},#{qsSystemlog.parameter},#{qsSystemlog.state},#{qsSystemlog.operationTime},#{qsSystemlog.method},
+                  #{qsSystemlog.operationType},#{qsSystemlog.operationDescribe})
+    </insert>
+
+    <select id="findByDrstat" resultType="com.photonstudio.pojo.Drinfo">
+        select distinct d.*
+        from `${dBname}`.drinfo d
+        LEFT JOIN `${dBname}`.reg r on d.drid= r.dr_Id
+        LEFT JOIN `${dBname}`.qstag q on q.tagname=r.tag_name
+        left join `${dBname}`.drtypeinfo f on f.drtypeid =d.drtypeid
+            <where>
+                q.tagname =#{tagnames}
+            </where>
+    </select>
+<select id="findByregState" resultType="com.photonstudio.pojo.Reg">
+    select distinct r.*,s.subname,b.text from `${dBname}`.reg r
+        LEFT JOIN `${dBname}`.sub s on r.reg_sub=s.subid
+        LEFT JOIN `${dBname}`.subinfo b on b.subid=s.subid
+    <where>
+         1=1
+        <if test="tagname!=null and tagname!=''">
+        and  r.tag_name =#{tagname}
+        </if>
+        <if test="isenergy!=null and isenergy!=''">
+           and r.isenergy=#{isenergy}
+        </if>
+    </where>
+    group by r.reg_id
+</select>
+    <select id="findQslinByid" resultType="com.photonstudio.pojo.Qslinkrw">
+        select r.*,t.tj_name,j.jg_name from `${dBname}`.qs_link_rw r
+            LEFT JOIN `${dBname}`.qs_link_tj t on r.tj_id=t.tj_id
+            LEFT JOIN `${dBname}`.qs_link_jg j on j.jg_id=r.jg_id
+            <where>
+                t.tj_id=#{tjid}
+                 and j.jg_id=#{jgid}
+            </where>
+    </select>
+    <select id="findByids" resultType="com.photonstudio.pojo.Qslinkrw">
+        select * from `${dBname}`.qs_link_rw
+        <where>
+            rw_id in
+            <foreach collection="ids" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findEnergyinfo" resultType="com.photonstudio.pojo.Energyinfo">
+        select * from `${dBname}`.energyinfo
+        <where>
+           id in
+            <foreach collection="ids" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="findQsAlarmalogBy" resultType="com.photonstudio.pojo.QsAlarmlog">
+        SELECT a.* ,c.reg_Name,d.drid,d.drname ,e.alarmtypename,f.alarmexplain ,g.drtypename FROM `${dBname}`.qs_alarmlog a INNER JOIN
+        (select reg_id, max(time) time from `${dBname}`.qs_alarmlog GROUP BY reg_id) b
+        ON a.reg_id=b.reg_id AND a.time =b.time INNER JOIN
+        (SELECT * FROM `${dBname}`.reg WHERE reg.tag_alarm_state=1) c ON a.reg_id=c.reg_id
+        LEFT JOIN `${dBname}`.drinfo d ON c.dr_Id=d.drid
+        left join `${dBname}`.alarmtype e on a.alarm_level=e.alarmtypelevel
+        left join `${dBname}`.regalarminfo f on a.reg_id=f.reg_id and a.alarm_level=f.alarm_level
+        left join `${dBname}`.drtypeinfo g on d.drtypeid=g.drtypeid where  a.id=#{id}
+    </select>
+
+    <select id="findByPage" resultType="com.photonstudio.pojo.QsSystemlog">
+        select * from `${dBname}`.qs_systemlog
+       <where>
+           1=1
+           <if test="userCode!=null and userCode!=''">
+               and user_code like concat('%',#{userCode},'%')
+           </if>
+           <if test="type!=null and type!=''">
+             and type like concat('%',#{type},'%')
+         </if>
+         <if test="operationType!=null and operationType!=''">
+             and operation_type like concat('%',#{operationType},'%')
+         </if>
+           <if test="starTime!=null and starTime!=''">
+               and operation_time &gt;= #{starTime}
+           </if>
+           <if test="endTime!=null and endTime!='' ">
+               and operation_time &lt;= #{endTime}
+           </if>
+       </where>
+        ORDER BY operation_time desc  limit #{pageCurrent},#{pageSize}
+    </select>
+    <select id="findBycount" resultType="int">
+        select count(*) from `${dBname}`.qs_systemlog
+        <where>
+            1=1
+            <if test="userCode!=null and userCode!=''">
+                and user_code like concat('%',#{userCode},'%')
+            </if>
+            <if test="type!=null and type!=''">
+                and type like concat('%',#{type},'%')
+            </if>
+            <if test="operationType!=null and operationType!=''">
+                and operation_type like concat('%',#{operationType},'%')
+            </if>
+            <if test="starTime!=null and starTime!=''">
+                and operation_time &gt;= #{starTime}
+            </if>
+            <if test="endTime!=null and endTime!='' ">
+                and operation_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="findAll" resultType="com.photonstudio.pojo.Qsmsrw">
+        select * from `${dBname}`.qs_ms_rw where id=#{id}
+    </select>
+
+    <select id="findById" resultType="com.photonstudio.pojo.Qsmsrw">
+     select  * from `${dBname}`.qs_ms_rw
+     <where>
+         id in
+         <foreach collection="rwid" open="("
+                  close=")"
+                  separator=","
+                  item="id">
+             #{id}
+         </foreach>
+     </where>
+    </select>
+    <select id="indRegfById" resultType="com.photonstudio.pojo.Reg">
+        select * from `${dBname}`.reg
+        <where>
+            reg_id in
+            <foreach collection="regid" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
+    <select id="findAllByid" resultType="com.photonstudio.pojo.Qsmsjg">
+        select * from `${dBname}`.qs_ms_jg
+        <where>
+            id in
+            <foreach collection="ids" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+</mapper>

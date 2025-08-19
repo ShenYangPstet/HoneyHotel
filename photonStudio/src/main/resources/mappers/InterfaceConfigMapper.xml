@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.InterfaceConfigMapper">
+	<select id="findObject" resultType="InterfaceConfig">
+	select * from zsqy_v2.interfaceconfig
+	<where>
+	1=1
+	<if test="explain!=null and explain!=''">
+	and  explain like concat("%",#{explain},"%") 
+	</if>
+	<if test="interfaceType!=null">
+	and interfaceType =#{interfaceType}
+	</if>
+	</where>
+	<if test="pageSize!=null">
+          limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from zsqy_v2.interfaceconfig
+	<where>
+	1=1
+	<if test="explain!=null and explain!=''">
+	and  explain like concat("%",#{explain},"%") 
+	</if>
+	<if test="interfaceType!=null and interfaceType!=''">
+	and interfaceType =#{interfaceType}
+	</if>
+	</where>
+	</select>
+	<insert id="insertObject">
+	insert into zsqy_v2.interfaceconfig (interfaceType,url,username,`password`,appid,`key`,`explain`)
+	values (#{interfaceConfig.interfaceType},#{interfaceConfig.url},#{interfaceConfig.username},
+	#{interfaceConfig.password},#{interfaceConfig.appid},#{interfaceConfig.key},#{interfaceConfig.explain})
+	</insert>
+	<delete id="deleteObject">
+	delete from zsqy_v2.interfaceconfig
+	<where>
+	id in <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+	</delete>
+	<update id="updateObject">
+	update zsqy_v2.interfaceconfig
+	<set>
+	interfaceType=#{interfaceConfig.interfaceType},
+	url=#{interfaceConfig.url}, username=#{interfaceConfig.username}, 
+	`password`=#{interfaceConfig.password},appid=#{interfaceConfig.appid},
+	`key` =#{interfaceConfig.key}, `explain`=#{interfaceConfig.explain}
+	</set>
+	where id=#{interfaceConfig.id}
+	</update>
+</mapper>

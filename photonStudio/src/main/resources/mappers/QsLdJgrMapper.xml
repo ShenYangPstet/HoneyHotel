@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsLdJgrMapper">
+<select id="findObject" resultType="QsLdJgr">
+	select a.*,b.ld_rw_name,b.ld_rw_miaoshu,c.reg_Name,d.picname 
+	from `${dBname}`.qs_ld_jgr a
+	left join `${dBname}`.qs_ld_rw b on a.ld_rw_id=b.ld_rw_id 
+	left join `${dBname}`.reg c on a.reg_id=c.reg_id 
+	LEFT JOIN `${dBname}`.pic d ON a.pic_id=d.picid
+	<where>
+		<if test="ldLxId!=null and ldLxId!=''">
+		a.ld_lx_id=#{ldLxId}
+		</if>
+	  </where>
+	  <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+      </if>
+</select>
+<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.qs_ld_jgr 
+	<where>
+		<if test="ldLxId!=null and ldLxId!=''">
+		ld_lx_id=#{ldLxId}
+		</if>
+	</where>
+</select>
+<select id="findObjectByldRwId" resultType="QsLdJgr">
+select * from `${dBname}`.qs_ld_jgr 
+	<where>
+	ld_rw_id=#{ldRwId}
+	</where>
+</select>
+<select id="findObjectById" resultType="int">
+	select count(*) from `${dBname}`.qs_ld_jgr 
+	<where>
+		ld_jg_id=#{id}
+	  </where>
+</select>
+<select id="findObjectByLdJgId" resultType="QsLdJgr">
+select * from `${dBname}`.qs_ld_jgr 
+	<where>
+		ld_jg_id=#{id}
+	  </where>
+</select>
+<insert id="insertObject">
+	insert into `${dBname}`.qs_ld_jgr (ld_rw_id,ld_jg_name,ld_lx_id,reg_id,
+	tag_value,sp_id,pic_id,pic_parameter,phone,message,reserve) values (#{qsLdJgr.ldRwId},
+	#{qsLdJgr.ldJgName},#{qsLdJgr.ldLxId},#{qsLdJgr.regId},#{qsLdJgr.tagValue},
+	#{qsLdJgr.spId},#{qsLdJgr.picId},#{qsLdJgr.picParameter},#{qsLdJgr.phone},#{qsLdJgr.message},#{qsLdJgr.reserve})
+</insert>
+<delete id="deleteObjectByRwId">
+	delete from `${dBname}`.qs_ld_jgr
+	<where>
+	ld_rw_id in
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+</delete>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.qs_ld_jgr 
+	<where>
+	ld_jg_id in
+		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+</delete>
+<update id="updateObject">
+	update `${dBname}`.qs_ld_jgr
+	<set>
+		<if test="qsLdJgr.ldRwId!=null and qsLdJgr.ldRwId!=''">
+		ld_rw_id=#{qsLdJgr.ldRwId},
+		</if>
+		<if test="qsLdJgr.ldJgName!=null and qsLdJgr.ldJgName!=''">
+		ld_jg_name=#{qsLdJgr.ldJgName},
+		</if>
+		<if test="qsLdJgr.ldLxId!=null and qsLdJgr.ldLxId!=''">
+		ld_lx_id=#{qsLdJgr.ldLxId},
+		</if>
+		<if test="qsLdJgr.regId!=null and qsLdJgr.regId!=''">
+		reg_id=#{qsLdJgr.regId},
+		</if>
+		<if test="qsLdJgr.tagValue!=null and qsLdJgr.tagValue!=''">
+		tag_value=#{qsLdJgr.tagValue},
+		</if>
+		<if test="qsLdJgr.spId!=null and qsLdJgr.spId!=''">
+		sp_id=#{qsLdJgr.spId},
+		</if>
+		<if test="qsLdJgr.picId!=null and qsLdJgr.picId!=''">
+		pic_id=#{qsLdJgr.picId},
+		</if>
+		<if test="qsLdJgr.picParameter!=null and qsLdJgr.picParameter!=''">
+		pic_parameter=#{qsLdJgr.picParameter},
+		</if>
+		<if test="qsLdJgr.phone!=null and qsLdJgr.phone!=''">
+		phone=#{qsLdJgr.phone},
+		</if>
+		<if test="qsLdJgr.message!=null and qsLdJgr.message!=''">
+		message=#{qsLdJgr.message},
+		</if>
+		<if test="qsLdJgr.reserve!=null and qsLdJgr.reserve!=''">
+		reserve=#{qsLdJgr.reserve},
+		</if>
+		ld_jg_id=#{qsLdJgr.ldJgId}
+	</set>
+	<where>
+		ld_jg_id=#{qsLdJgr.ldJgId}
+	</where>
+</update>
+</mapper>

@@ -1,0 +1,54 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+    <id>deploy</id>
+    <!--打包成一个用于发布的zip文件-->
+    <formats>
+        <format>zip</format>
+    </formats>
+    <dependencySets>
+        <dependencySet>
+            <!-- 排除当前项目构建期间生成的artifact -->
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>build/ibms/lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <!-- 配置文件打包进zip文件的conf目录 -->
+        <fileSet>
+            <directory>${project.basedir}/src/main/resources</directory>
+            <outputDirectory>build/ibms/config</outputDirectory>
+            <includes>
+                <include>*.yml</include>
+                <include>*.properties</include>
+                <include>*.xml</include>
+                <include>properties/**</include>
+            </includes>
+        </fileSet>
+        <!-- 项目编译出来的jar打包进zip文件 -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>build/ibms</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.basedir}/deploy/Dockerfile</source>
+            <outputDirectory>build/ibms</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/deploy/docker-compose.yml</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/deploy/nginx.conf</source>
+            <outputDirectory>nginx/conf</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/deploy/redis.conf</source>
+            <outputDirectory>redis/conf</outputDirectory>
+        </file>
+    </files>
+</assembly>

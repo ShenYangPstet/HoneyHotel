@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.DlldrinfoMapper">
+<select id="findObject" resultType="Dlldrinfo">
+select a.*,b.drllname from `${dBname}`.dlldrinfo a left join `${dBname}`.drllinfo b
+	 on a.drllid=b.drllid 
+	 <where>
+	 <if test="drname!=null and drname!=''">
+	 a.drnamelike concat("%",#{drname},"%")
+	 </if>
+	 </where>
+	  <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+      </if>
+</select>
+<select id="getRowCount" resultType="int">
+select count(*) from `${dBname}`.dlldrinfo 
+	 <where>
+	 <if test="drname!=null and drname!=''">
+	 drname=#{drname}
+	 </if>
+	 </where>
+</select>
+<select id="findObjectById" resultType="int">
+select count(*) from `${dBname}`.dlldrinfo where drid=#{drid} 
+</select>
+<select id="findDrllinfo" resultType="drllinfo">
+select * from `${dBname}`.drllinfo
+</select>
+<select id="findDrlltypeBydrid" resultType="Drlltype">
+SELECT * FROM `${dBname}`.drlltype a LEFT JOIN `${dBname}`.dlldrinfo b 
+ON  a.drllid=b.drllid WHERE b.drid=#{drid}
+</select>
+<insert id="insertObject">
+insert into `${dBname}`.dlldrinfo (drname,drllid,type,ipport,com,baudRate,dataBits,stopBits,parity,cycle,MacID) values
+		(#{dlldrinfo.drname},#{dlldrinfo.drllid},#{dlldrinfo.type},#{dlldrinfo.ipport},#{dlldrinfo.com},#{dlldrinfo.baudRate},
+		#{dlldrinfo.dataBits},#{dlldrinfo.stopBits},#{dlldrinfo.parity},#{dlldrinfo.cycle},#{dlldrinfo.macID})
+</insert>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.dlldrinfo 
+	<where>
+	drid in 
+	 <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+         </where>
+</delete>
+<update id="updateObject">
+	update `${dBname}`.dlldrinfo
+	<set>
+	drname=#{dlldrinfo.drname},drllid=#{dlldrinfo.drllid},type=#{dlldrinfo.type},ipport=#{dlldrinfo.ipport},com=#{dlldrinfo.com},baudRate=#{dlldrinfo.baudRate},dataBits=#{dlldrinfo.dataBits},stopBits=#{dlldrinfo.stopBits},parity=#{dlldrinfo.parity},cycle=#{dlldrinfo.cycle},MacID=#{dlldrinfo.macID}
+	</set>
+	<where>
+	drid=#{dlldrinfo.drid}
+	</where>
+	</update>
+</mapper>

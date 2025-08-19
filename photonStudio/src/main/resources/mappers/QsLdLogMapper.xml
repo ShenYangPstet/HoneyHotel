@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsLdLogMapper">
+<select id="findObject" resultType="QsLdLog">
+	SELECT a.*, b.ld_rw_name , c.ld_tj_name,d.ld_jg_name FROM `${dBname}`.qs_ld_log a 
+	LEFT JOIN `${dBname}`.qs_ld_rw b ON a.ld_rw_id=b.ld_rw_id 
+	LEFT JOIN `${dBname}`.qs_ld_tgr c ON a.ld_tj_id=c.ld_tj_id 
+	LEFT JOIN `${dBname}`.qs_ld_jgr d ON a.ld_jg_id=d.ld_jg_id
+	<where>
+	1=1
+	<if test="type==null">
+	and a.type &lt;&gt; 1
+	</if>
+	<if test="type!=null">
+	and a.type=#{type}
+	</if>
+	<if test="state!=null">
+	and a.state=#{state}
+	</if>
+	<if test="startTime!=null">
+	  and a.time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	  and a.time &lt;= #{endTime} 
+	</if>
+	</where>
+	ORDER BY a.time DESC
+	<if test="pageSize!=null">
+	limit #{startIndex},#{pageSize}
+    </if>
+</select>
+<select id="findAllByTime" resultType="QsLdLog">
+	SELECT a.*, b.ld_rw_name , c.ld_tj_name,d.ld_jg_name FROM `${dBname}`.qs_ld_log a 
+	LEFT JOIN `${dBname}`.qs_ld_rw b ON a.ld_rw_id=b.ld_rw_id 
+	LEFT JOIN `${dBname}`.qs_ld_tgr c ON a.ld_tj_id=c.ld_tj_id 
+	LEFT JOIN `${dBname}`.qs_ld_jgr d ON a.ld_jg_id=d.ld_jg_id
+	<where>
+	1=1
+	
+	<if test="startTime!=null">
+	  and a.time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	  and a.time &lt;= #{endTime} 
+	</if>
+	</where>
+</select>
+<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.qs_ld_log
+	<where>
+	1=1
+	<if test="type==null">
+	and type &lt;&gt; 1
+	</if>
+	<if test="type!=null">
+	and type=#{type}
+	</if>
+	<if test="state!=null">
+	and state=#{state}
+	</if>
+	<if test="startTime!=null">
+	  and time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	  and time &lt;= #{endTime} 
+	</if>
+	</where>
+</select>
+<insert id="insertObjectByQsLdJgr">
+insert into `${dBname}`.qs_ld_log (ld_rw_id,ld_tj_id,ld_jg_id,type,state,time) 
+values (#{qsLdJgr.ldRwId},#{tjid},#{qsLdJgr.ldJgId},#{qsLdJgr.ldLxId},
+0,now())
+</insert>
+<delete id="deleteObjectById">
+ 	delete from `${dBname}`.qs_ld_log 
+	<where>
+		id in
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+</delete>
+<insert id="insertObject">
+insert into `${dBname}`.qs_ld_log (ld_tj_id,ld_rw_id,ld_jg_id,type,state,time) 
+values (#{qsLdLog.ldTjId},#{qsLdLog.ldRwId},#{qsLdLog.ldJgId},#{qsLdLog.type},
+#{qsLdLog.state},#{qsLdLog.time})
+</insert>
+<update id="updateObject">
+	update `${dBname}`.qs_ld_log
+	<set>
+	<if test="qsLdLog.ldTjId!=null">
+	ld_tj_id=#{qsLdLog.ldTjId},
+	</if>
+	<if test="qsLdLog.ldRwId!=null">
+	ld_rw_id=#{qsLdLog.ldRwId},
+	</if>
+	<if test="qsLdLog.ldJgId!=null">
+	ld_jg_id=#{qsLdLog.ldJgId},
+	</if>
+	<if test="qsLdLog.type!=null">
+	type=#{qsLdLog.type},
+	</if>
+	<if test="qsLdLog.state!=null">
+	state=#{qsLdLog.state},
+	</if>
+	<if test="qsLdLog.time!=null">
+	time=#{qsLdLog.time},
+	</if>
+	id=#{id}
+	</set>
+	<where>
+	id=#{id}
+	</where>
+</update>
+</mapper>

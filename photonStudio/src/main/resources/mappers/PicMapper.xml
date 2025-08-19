@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.PicMapper">
+
+	<select id="findAllPic" resultType="com.photonstudio.pojo.Pic">
+		select * from `${dBname}`.pic  ORDER BY prioritylv is null,prioritylv ASC
+	</select>
+	<select id="findExportPic" resultType="com.photonstudio.pojo.Pic">
+		select * from `${dBname}`.pic  ORDER BY hyponymy
+	</select>
+	<select id="findObject" resultType="com.photonstudio.pojo.Pic">
+	SELECT *, b.buildname ,c.imgname,c.imgurl FROM `${dBname}`.pic a 
+	 
+	LEFT JOIN `${dBname}`.buildinfo b on a.buildid=b.buildid 
+             
+	LEFT JOIN `${dBname}`.images c on a.img_id=c.imgid 
+             
+	<where>
+	  parentid=#{parentid} 
+	 </where>
+	 ORDER BY prioritylv is null,prioritylv ASC
+	</select>
+	<select id="findObjectInPicmodeid" resultType="Pic">
+	select p.*, i.imgurl from `${dBname}`.pic p
+		LEFT JOIN `${dBname}`.images i on p.img_id=i.imgid
+	<where>
+	picmodeid is not null and picmodeid &lt;&gt; &apos;&apos; 
+	<if test="picname!=null and picname!=''">
+	and picname like concat("%",#{picname},"%")
+	</if>
+	ORDER BY prioritylv is null,prioritylv ASC
+	</where>
+	</select>
+	<select id="findAllPicNameid" resultType="Pic">
+	select p.picid,CONCAT(p.picid,"_",p.picname) as picname,p.parentid,p.buildid,p.picmodeid,p.img_id,i.imgurl,p.pictype,p.departmentid,p.prioritylv,p.color from `${dBname}`.pic p
+	LEFT JOIN `${dBname}`.images i on p.img_id=i.imgid
+	</select>
+	<select id="findObjectById" resultType="Pic">
+	select * from `${dBname}`.pic
+	<where>
+		picid=#{picid}	
+	</where>
+	</select>
+	<select id="findDepartmentid" resultType="com.photonstudio.pojo.Appuser">
+		select * from `${dBname}`.appuser where userid=#{userid}
+	</select>
+	<select id="findPiclistBydpid" resultType="com.photonstudio.pojo.Pic">
+		select p.*,i.imgurl from `${dBname}`.pic p
+			LEFT JOIN `${dBname}`.images i on p.img_id=i.imgid
+			where p.picid in (select picid from `${dBname}`.departmentpic where departmentid=#{departmentid}) ORDER BY prioritylv is null,prioritylv ASC
+	</select>
+	<select id="findPiclistAll" resultType="com.photonstudio.pojo.Pic">
+		select p.*,i.imgurl from `${dBname}`.pic p
+			LEFT JOIN `${dBname}`.images i on p.img_id=i.imgid
+			ORDER BY prioritylv is null,prioritylv ASC
+	</select>
+	<delete id="deleteObjectById">
+	delete  from `${dBname}`.elements  where elemtpiceditid in (select id from `${dBname}`.picedit where picid=#{picid});
+	delete from `${dBname}`.picedit where picid=#{picid};
+	 delete from `${dBname}`.pic where picid = #{picid};
+ 	
+	</delete>
+	<select id="findChildrenId" resultType="int">
+	 	SELECT picid FROM `${dBname}`.pic WHERE parentid=#{picid}
+	 </select>
+	 <insert id="insertObject">
+	 insert into `${dBname}`.pic (picid,picname,parentid,
+	 buildid,picmodeid,img_id,pictype,departmentid,prioritylv,color,root_path,hyponymy) values
+	 (#{pic.picid},#{pic.picname},#{pic.parentid},#{pic.buildid},#{pic.picmodeid},
+	 #{pic.imgId},#{pic.pictype},#{pic.departmentid},#{pic.prioritylv},#{pic.color},#{pic.rootPath},#{pic.hyponymy})
+	   </insert>
+	   <update id="updateObject">
+	   	update `${dBname}`.pic 
+ 	<set>
+             <if test="pic.picname!=null and pic.picname!=''">
+               picname=#{pic.picname},
+             </if>
+                  parentid=#{pic.parentid},
+                buildid=#{pic.buildid},
+                picmodeid=#{pic.picmodeid},
+                img_id=#{pic.imgId},
+                departmentid=#{pic.departmentid},
+                prioritylv=#{pic.prioritylv},
+                pictype=#{pic.pictype},
+                color=#{pic.color},
+				root_path=#{pic.rootPath},
+				hyponymy=#{pic.hyponymy}
+          </set>
+          where picid=#{pic.picid}
+	   </update>
+	   <update id="updateColor">
+	   		update `${dBname}`.pic set color=#{color} where picid=#{picid}
+	   </update>
+</mapper>

@@ -1,0 +1,1718 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AppmanagerMapper">
+
+    <select id="findObjectByApptypeid" resultType="com.photonstudio.pojo.Appmanager">
+
+        select a.* ,b.apptypename from zsqy_v2.appmanager a left join
+        zsqy_v2.apptype b on a.apptypeid=b.id
+        <where>
+            1=1
+            <if test="apptypeid!=null">
+                and a.apptypeid =#{apptypeid}
+            </if>
+            <if test="region!=null and region!=''">
+                and a.region=#{region}
+            </if>
+            <if test="city!=null and city!=''">
+                and a.city=#{city}
+            </if>
+            <if test="userid!=null">
+                and appid in (select appid from zsqy_v2.appusergroup where userid=#{userid} )
+            </if>
+            and a.state=#{state}
+        </where>
+        <if test="pageSize!=null and pageSize!=''">
+            limit #{startIndex},#{pageSize}
+        </if>
+    </select>
+    <select id="findObjectByAppid" resultType="Appmanager">
+        select * from zsqy_v2.appmanager
+        <where>
+            appid=#{appid}
+        </where>
+    </select>
+    <select id="findAllByAppids" resultType="Appmanager">
+        select * from zsqy_v2.appmanager
+        <where>
+            appid in
+            <foreach collection="appids" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+    <select id="findAllByAppidsAppstate" resultType="Appmanager">
+        select * from zsqy_v2.appmanager
+        <where>
+            appid in
+            <foreach collection="appids" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+            and appstate=1
+        </where>
+    </select>
+    <!-- 查询user未绑定的项目 -->
+    <select id="findObjectByUesrid" resultType="Appmanager">
+        select * from zsqy_v2.appmanager
+        <where>
+            appid not in (select appid from zsqy_v2.appusergroup where userid =#{userid} ) and
+            state=0
+        </where>
+    </select>
+    <select id="getRowCount" resultType="int">
+        SELECT COUNT(*) FROM zsqy_v2.appmanager
+        <where>
+            1=1
+            <if test="apptypeid!=null">
+                and apptypeid =#{apptypeid}
+            </if>
+            <if test="region!=null and region!=''">
+                and region=#{region}
+            </if>
+            <if test="city!=null and city!=''">
+                and city=#{city}
+            </if>
+            <if test="userid!=null and userid!=''">
+                and appid in (select appid from zsqy_v2.appusergroup where userid=#{userid} )
+            </if>
+            and state=#{state}
+        </where>
+    </select>
+    <select id="findObjectByState" resultType="Appmanager">
+        select *
+        from zsqy_v2.appmanager
+        where state = #{state}
+          and appstate = #{appstate}
+    </select>
+    <select id="getRowCountByLicense" resultType="int">
+        select count(*)
+        from zsqy_v2.appmanager
+        where state = 0
+          and appstate = 1
+    </select>
+    <delete id="deleteObjectsById">
+        delete from zsqy_v2.appmanager
+        <where>
+            appid =#{appid}
+        </where>
+    </delete>
+    <delete id="deleteAPPGroupById">
+        delete from zsqy_v2.appusergroup
+        <where>
+            appid =#{appid}
+        </where>
+    </delete>
+    <insert id="insertObject">
+        insert into zsqy_v2.appmanager (appid,appName,ipaddr,appport,apptypeid,
+        appimg,appexplain,appstate,state,region,city,area_number,longitude,latitude,appIntroduction)
+        values (#{appid},#{appName},#{ipaddr},
+        #{appport},#{apptypeid},#{appimg},
+        #{appexplain},#{appstate},#{state},#{region},#{city},#{areaNumber},#{longitude},#{latitude},#{appIntroduction});
+        <selectKey resultType="int" keyProperty="appid" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <update id="updateObjectById">
+        update zsqy_v2.appmanager
+        <set>
+            <if test="appName!=null and appName!=''">
+                appName=#{appName},
+            </if>
+            <if test="ipaddr!=null and ipaddr!=''">
+                ipaddr=#{ipaddr},
+            </if>
+            <if test="appport!=null and appport!=''">
+                appport=#{appport},
+            </if>
+            <if test="appimg!=null and appimg!=''">
+                appimg=#{appimg},
+            </if>
+            <if test="apptypeid!=null">
+                apptypeid =#{apptypeid},
+            </if>
+            <if test="appexplain!=null and appexplain!=''">
+                appexplain=#{appexplain},
+            </if>
+            <if test="appstate!=null and appstate!=''">
+                appstate=#{appstate},
+            </if>
+            <if test="region!=null and region!=''">
+                region=#{region},
+            </if>
+            <if test="city!=null and city!=''">
+                city=#{city},
+            </if>
+            <if test="areaNumber!=null and areaNumber!=''">
+                area_number={areaNumber},
+            </if>
+            <if test="longitude!=null and longitude!=''">
+                longitude=#{longitude},
+            </if>
+            <if test="latitude!=null and latitude!=''">
+                latitude=#{latitude},
+            </if>
+            appIntroduction=#{appIntroduction},
+            state=#{state}
+
+        </set>
+        where appid=#{appid}
+    </update>
+    <select id="findCount" resultType="int">
+
+        SELECT COUNT(*) FROM zsqy_v2.appmanager
+        <where>
+
+            state =0
+
+        </where>
+    </select>
+    <select id="createtable">
+        USE
+        zsqy_v2;
+        CREATE TABLE IF NOT EXISTS appmanager
+        (
+            appid INT
+        (
+            11
+        ) NOT NULL AUTO_INCREMENT COMMENT '项目id',
+            appName VARCHAR
+        (
+            50
+        ) DEFAULT NULL COMMENT '名称',
+            ipaddr VARCHAR
+        (
+            50
+        ) DEFAULT NULL,
+            appport VARCHAR
+        (
+            10
+        ) DEFAULT NULL,
+            apptypeid VARCHAR
+        (
+            50
+        ) DEFAULT NULL,
+            appimg VARCHAR
+        (
+            50
+        ) DEFAULT NULL,
+            appexplain VARCHAR
+        (
+            150
+        ) DEFAULT NULL,
+            appstate VARCHAR
+        (
+            10
+        ) DEFAULT NULL,
+            state VARCHAR
+        (
+            10
+        ) DEFAULT NULL,
+            PRIMARY KEY
+        (
+            appid
+        )
+            ) ENGINE = INNODB AUTO_INCREMENT = 19 DEFAULT CHARSET = utf8;
+    </select>
+    <select id="createDatabase">
+
+        drop
+        database if exists `${dBname}`;
+create
+        database `${dBname}` default character set utf8 COLLATE utf8_general_ci;
+use
+        `${dBname}`;
+
+
+        SET NAMES utf8mb4;
+        SET
+        FOREIGN_KEY_CHECKS = 0;
+
+
+        DROP TABLE IF EXISTS `alarmtype`;
+        CREATE TABLE `alarmtype`
+        (
+            `id`              int(11) NOT NULL AUTO_INCREMENT,
+            `alarmtypename`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '报警名称',
+            `alarmtypelevel`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '报警等级',
+            `alarmtypeExpain` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '报警描述',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        insert into alarmtype
+        select *
+        from zsqy_v2.alarmtype;
+
+        DROP TABLE IF EXISTS `appinfo`;
+        CREATE TABLE `appinfo`
+        (
+            `appid`       int(10) NOT NULL AUTO_INCREMENT,
+            `appname`     varchar(50)  DEFAULT NULL COMMENT '项目名',
+            `applogotype` int(2) DEFAULT NULL COMMENT '项目logo类型（１——文字、２——图片）',
+            `applogotext` varchar(255) DEFAULT NULL COMMENT '项目logo文字内容',
+            `applogoimg`  varchar(250) DEFAULT NULL COMMENT '项目logo图片路径',
+            `apppic`      varchar(250) DEFAULT NULL COMMENT '项目图片',
+            `appman`      int(10) DEFAULT NULL COMMENT '项目人数',
+            `apparea`     varchar(20)  DEFAULT NULL COMMENT '项目面积',
+            `appdate`     datetime(6) DEFAULT NULL COMMENT '项目日期',
+            `appreserve1` varchar(100) DEFAULT NULL,
+            `appreserve2` varchar(100) DEFAULT NULL,
+            PRIMARY KEY (`appid`) USING BTREE
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+
+        DROP TABLE IF EXISTS `appuser`;
+        CREATE TABLE `appuser`
+        (
+            `userid`         int(11) NOT NULL AUTO_INCREMENT,
+            `username`       varchar(50) DEFAULT NULL,
+            `password`       varchar(50) DEFAULT NULL,
+            `phonenum`       varchar(25) DEFAULT NULL,
+            `email`          varchar(30) DEFAULT NULL,
+            `usergroupid`    int(10) DEFAULT NULL,
+            `departmentid`   int(10) DEFAULT NULL,
+            `reg_show_level` int(2) DEFAULT NULL,
+            `usertype`       int(4) DEFAULT NULL,
+            `isJB`           int(10) DEFAULT NULL,
+            `skin_color`     int(11) DEFAULT NULL COMMENT '皮肤颜色',
+            `permission` int(11) DEFAULT 0 COMMENT '1是用户端  0是维修端',
+            PRIMARY KEY (`userid`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC COMMENT='用户表';
+
+
+        DROP TABLE IF EXISTS `assetstype`;
+        CREATE TABLE `assetstype`
+        (
+            `id`             int(11) NOT NULL AUTO_INCREMENT,
+            `assetstypename` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '资产类别名称',
+            `explain`        varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '资产说明',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `buildinfo`;
+        CREATE TABLE `buildinfo`
+        (
+            `buildid`      int(11) NOT NULL AUTO_INCREMENT,
+            `buildname`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `buildExplain` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `appid`        int(11) NULL DEFAULT NULL,
+            `appname`      varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`buildid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `department`;
+        CREATE TABLE `department`
+        (
+            `departmentid`      int(11) NOT NULL AUTO_INCREMENT,
+            `departmentname`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `fuid`              int(11) NULL DEFAULT NULL,
+            `departmentExplain` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`departmentid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `departmentdr`;
+        CREATE TABLE `departmentdr`
+        (
+            `id`           int(11) NOT NULL AUTO_INCREMENT,
+            `departmentid` int(10) NULL DEFAULT NULL,
+            `drid`         int(5) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `departmentpic`;
+        CREATE TABLE `departmentpic`
+        (
+            `id`           int(11) NOT NULL AUTO_INCREMENT,
+            `departmentid` int(11) NULL DEFAULT NULL,
+            `picid`        int(11) NULL DEFAULT NULL,
+            `pictype`      varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `dr_check_log`;
+        CREATE TABLE `dr_check_log`
+        (
+            `id`        int(10) NOT NULL AUTO_INCREMENT,
+            `time`      datetime     DEFAULT NULL,
+            `dr_id`     int(10) DEFAULT NULL,
+            `dr_name`   varchar(100) DEFAULT '',
+            `dr_state`  int(2) DEFAULT NULL,
+            `username`  varchar(50)  DEFAULT NULL,
+            `check_img` varchar(100) DEFAULT '' COMMENT '巡检图片',
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 COMMENT='设备巡检表';
+
+
+        DROP TABLE IF EXISTS `drinfo`;
+        CREATE TABLE `drinfo`
+        (
+            `drid`                  int(11) NOT NULL AUTO_INCREMENT,
+            `drname`                varchar(50)  DEFAULT NULL COMMENT '设备名',
+            `drtypeid`              int(10) DEFAULT NULL COMMENT '设备类型',
+            `buildid`               int(10) DEFAULT NULL COMMENT '所属的建筑id',
+            `spid`                  varchar(50)  DEFAULT NULL COMMENT '用于视频链接的id',
+            `dr_ManufactureStyle`   varchar(50)  DEFAULT NULL COMMENT '设备型号',
+            `dr_ManufactureFactory` varchar(50)  DEFAULT NULL COMMENT '设备生产厂家',
+            `dr_Factoryphone`       varchar(50)  DEFAULT NULL COMMENT '生产厂家电话',
+            `dr_InstallTime`        datetime     DEFAULT NULL COMMENT '安装时间',
+            `dr_InstallFactory`     varchar(50)  DEFAULT NULL COMMENT '安装厂家',
+            `dr_InstallPhone`       varchar(50)  DEFAULT NULL COMMENT '安装厂家电话',
+            `assets_typeid`         int(10) DEFAULT NULL COMMENT '资产类别。对应assets表',
+            `dr_UseState`           int(10) DEFAULT NULL COMMENT '使用状态。1使用。0未使用',
+            `storeroom`             int(10) DEFAULT NULL COMMENT '仓库id   对应storeroom表',
+            `dr_UseExplain`         varchar(150) DEFAULT NULL COMMENT '使用说明',
+            `instructionsid`        int(10) DEFAULT NULL COMMENT '设备操作手册id',
+            `MDcode`                varchar(200) DEFAULT NULL COMMENT '统一的设备编制（保留与其他系统进行对应的编号）',
+            `departmentid`          int(10) DEFAULT NULL COMMENT '部门id',
+            `typeYT`                int(2) DEFAULT 0 COMMENT '类型用途:0普通设备，1门禁设备2照明设备3空调设备',
+            `userid`                int(11) DEFAULT NULL COMMENT '负责人id',
+            PRIMARY KEY (`drid`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+        CREATE TABLE `dr_user`
+        (
+            `id`     int(10) NOT NULL AUTO_INCREMENT,
+            `drid`   int(10) NOT NULL,
+            `userid` int(10) NOT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+        DROP TABLE IF EXISTS `drtype_elements`;
+        CREATE TABLE `drtype_elements`
+        (
+            `elemtsid`      int(11) NOT NULL AUTO_INCREMENT,
+            `jgtmodeid`     int(11) NULL DEFAULT NULL,
+            `elemttypeid`   int(11) NULL DEFAULT NULL,
+            `elemtELtype`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemtlevel`    varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemtstyle`    varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `text`          varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `imgid`         int(10) NULL DEFAULT NULL,
+            `Bdregmode`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `subid`         int(11) NULL DEFAULT NULL,
+            `elemtmodename` varchar(255) DEFAULT NULL,
+            PRIMARY KEY (`elemtsid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `drtypeinfo`;
+        CREATE TABLE `drtypeinfo`
+        (
+            `drtypeid`          int(11) NOT NULL AUTO_INCREMENT,
+            `drtypename`        varchar(50) DEFAULT NULL,
+            `parentid`          int(10) DEFAULT NULL,
+            `drtypeiconid`      int(10) DEFAULT NULL,
+            `isshow`            int(5) DEFAULT NULL,
+            `isdrtype`          int(5) DEFAULT NULL,
+            `iscustom_type`     int(5) DEFAULT NULL,
+            `picid`             int(5) DEFAULT NULL,
+            `parameter_display` int(2) DEFAULT 1 COMMENT '页面编辑是否展示设备列表信息栏0不显示1显示',
+            `parameter_list`    varchar(30) DEFAULT NULL COMMENT '资产信息1，历史数据2，报警记录3',
+            PRIMARY KEY (`drtypeid`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+        DROP TABLE IF EXISTS `drtypemode`;
+        CREATE TABLE `drtypemode`
+        (
+            `typemodeid`        int(11) NOT NULL AUTO_INCREMENT,
+            `drtypeid`          int(10) NULL DEFAULT NULL,
+            `reg_name`          varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_type`          varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_units`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_readWrite`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `tag_value`         varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_listShowLevel` int(10) NULL DEFAULT NULL,
+            `reg_sub`           varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_drShowType`    varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_drsub`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `ishistory`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `isenergy`          varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `isalarm`           varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `alarmtype`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value_min`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value_max`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `and_or`            varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `alarm_level`       varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `islistshow`        varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `tag_time`          varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `regcolor`          varchar(20) DEFAULT NULL,
+            PRIMARY KEY (`typemodeid`) USING BTREE
+        ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+        CREATE TABLE `board`
+        (
+          `id`                int(20) unsigned                                   NOT NULL AUTO_INCREMENT COMMENT '看板id',
+          `name`              varchar(50)                                        NOT NULL COMMENT '名称',
+          `description`       varchar(200)                                       NOT NULL DEFAULT '' COMMENT '描述',
+          `board_template_id` int(20) unsigned                                   NOT NULL COMMENT '模板id',
+          `color`             varchar(20)                                        NOT NULL DEFAULT '' COMMENT '颜色',
+          `height`            int(11)                                            NOT NULL COMMENT '高度',
+          `width`             int(11)                                            NOT NULL COMMENT '宽度',
+          `position_x`        int(11)                                            NOT NULL COMMENT '位置横坐标',
+          `position_y`        int(11)                                            NOT NULL COMMENT '位置纵坐标',
+          `custom_config`     longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' COMMENT '自定义配置' CHECK (json_valid(`custom_config`)),
+          PRIMARY KEY (`id`)
+        ) ENGINE = InnoDB
+          AUTO_INCREMENT = 1
+          DEFAULT CHARSET = utf8mb4 COMMENT ='看板表';
+
+        CREATE TABLE `board_template`
+        (
+          `id`           int(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '看板模板id',
+          `name`         varchar(50)      NOT NULL COMMENT '名称',
+          `code`         varchar(50)      NOT NULL COMMENT '编码',
+          `area`         varchar(50)      NOT NULL COMMENT '区域',
+          `description`  varchar(200)     NOT NULL DEFAULT '' COMMENT '描述',
+          `min_height`   int(11)                   DEFAULT NULL COMMENT '最小高度',
+          `min_width`    int(11)                   DEFAULT NULL COMMENT '最小宽度',
+          `max_height`   int(11)                   DEFAULT NULL COMMENT '最大高度',
+          `max_width`    int(11)                   DEFAULT NULL COMMENT '最大宽度',
+          `is_draggable` bit(1)           NOT NULL DEFAULT b'1' COMMENT '是否可拖拽',
+          `is_resizable` bit(1)           NOT NULL DEFAULT b'1' COMMENT '是否可调整大小',
+          `is_static`    bit(1)           NOT NULL DEFAULT b'0' COMMENT '是否纯静态',
+          `icon`         varchar(50)      NOT NULL DEFAULT '' COMMENT '图标',
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `uk_code` (`code`) USING BTREE
+        ) ENGINE = InnoDB
+          AUTO_INCREMENT = 1
+          DEFAULT CHARSET = utf8mb4 COMMENT ='看板模板表';
+
+        DROP TABLE IF EXISTS `elements`;
+        CREATE TABLE `elements`
+        (
+            `elemtsid`       int(11) NOT NULL AUTO_INCREMENT,
+            `elemtpiceditid` int(11) NULL DEFAULT NULL,
+            `elemttypeid`    int(11) NULL DEFAULT NULL,
+            `elemtELtype`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemtlevel`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemtstyle`     varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `text`           varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `imgid`          int(11) NULL DEFAULT NULL,
+            `Bdtype`         varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `Bdreg`          varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `Bddrtype`       varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `subid`          int(11) NULL DEFAULT NULL,
+            `Cscript`        varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `Sscript`        varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `colour`         varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemtmodename`  varchar(255) DEFAULT NULL,
+            PRIMARY KEY (`elemtsid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `elemttype`;
+        CREATE TABLE `elemttype`
+        (
+            `elemttypeid`   int(11) NOT NULL AUTO_INCREMENT COMMENT 'id主键 自定义元素类型',
+            `elemttypename` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '自定义元素类型名称',
+            `typeid`        int(11) DEFAULT NULL,
+            `imgid`         int(10) DEFAULT NULL,
+            PRIMARY KEY (`elemttypeid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        insert into elemttype
+        select *
+        from zsqy_v2.elemttype;
+
+        DROP TABLE IF EXISTS `elemttypemode`;
+        CREATE TABLE `elemttypemode`
+        (
+            `elemtmodeid`   int(11) NOT NULL AUTO_INCREMENT,
+            `elemtmodename` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '元素模板名-用户自定义',
+            `elemttypeid`   int(11) NULL DEFAULT NULL COMMENT '元素类型ID参考表elemttype',
+            `elemtELtype`   int(10) NULL DEFAULT NULL COMMENT '元素ID。固定的几个中已写死',
+            `elemtlevel`    int(5) NULL DEFAULT NULL COMMENT '元素的z-index的层级设定',
+            `elemtstyle`    varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '元素样式',
+            `text`          varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '如果是lable或textbox，所显示初始文字内容',
+            `imgid`         int(10) NULL DEFAULT NULL COMMENT '如果是img所初始显示的图片',
+            PRIMARY KEY (`elemtmodeid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        insert into elemttypemode
+        select *
+        from zsqy_v2.elemttypemode;
+
+        CREATE TABLE `elemtmodle`
+        (
+            `modleId`    int(10) NOT NULL AUTO_INCREMENT,
+            `modleName`  varchar(100) DEFAULT NULL,
+            `modleLevel` int(10) DEFAULT NULL,
+            PRIMARY KEY (`modleId`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+        insert into elemtmodle
+        select *
+        from zsqy_v2.elemtmodle;
+
+        DROP TABLE IF EXISTS `energyinfo`;
+        CREATE TABLE `energyinfo`
+        (
+            `id`                int(11) NOT NULL AUTO_INCREMENT,
+            `energytypeid`      int(11) NULL DEFAULT NULL,
+            `energytypename`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `energytypeExplain` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `tagnames`          varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `isapptotal`        int(2) DEFAULT NULL,
+             `company`          varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `energyparm`;
+        CREATE TABLE `energyparm`
+        (
+            `id`          int(10) NOT NULL AUTO_INCREMENT,
+            `day_energy`  varchar(10) DEFAULT '' COMMENT '每天预计产生能耗',
+            `dr_cost`     varchar(10) DEFAULT '' COMMENT '设备成本',
+            `people_cost` varchar(10) DEFAULT '' COMMENT '人力成本',
+            `carbon_parm` varchar(10) DEFAULT '' COMMENT '减少标碳参数',
+            `tree_parm`   varchar(10) DEFAULT '' COMMENT '相当于植树参数',
+            `cost_parm`   varchar(10) DEFAULT '' COMMENT '折合人民币参数',
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+
+        DROP TABLE IF EXISTS `energytype`;
+        CREATE TABLE `energytype`
+        (
+            `id`                int(11) NOT NULL AUTO_INCREMENT,
+            `energytypename`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `energytypeExplain` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `energytypeinfo`;
+        CREATE TABLE `energytypeinfo`
+        (
+            `id`           int(11) NOT NULL AUTO_INCREMENT,
+            `energytpyeid` int(11) NULL DEFAULT NULL,
+            `tagnames`     varchar(250) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `images`;
+        CREATE TABLE `images`
+        (
+            `imgid`   int(11) NOT NULL AUTO_INCREMENT,
+            `imgname` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `imgtype` varchar(12) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `imgurl`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`imgid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        insert into images
+        select *
+        from zsqy_v2.images;
+
+        DROP TABLE IF EXISTS `instructions`;
+        CREATE TABLE `instructions`
+        (
+            `id`                  int(11) NOT NULL AUTO_INCREMENT,
+            `instructionsName`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '说明书名',
+            `instructionsTypeid`  int(10) NULL DEFAULT NULL COMMENT '说明类型参考设备类型表drtypeinfo',
+            `instructionsExplain` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '说明描述',
+            `filepath`            varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '上传说明的路径',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `jgtmode`;
+        CREATE TABLE `jgtmode`
+        (
+            `id`            int(11) NOT NULL AUTO_INCREMENT,
+            `typeid`        int(11) NULL DEFAULT NULL,
+            `typemodelevel` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemttypeid`   int(11) NULL DEFAULT NULL,
+            `jgtx`          varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `jgty`          varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `z_index`       varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `type`          varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `jgth`          int(10) DEFAULT NULL,
+            `jgtw`          int(10) DEFAULT NULL,
+            `angle`         int(10) DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `lowcode_theme`;
+        CREATE TABLE `lowcode_theme`
+        (
+            `id`           int(11) NOT NULL AUTO_INCREMENT,
+            `app_id`       int(11) DEFAULT NULL COMMENT '项目id',
+            `type_id`      int(11) DEFAULT NULL COMMENT '类型(备用)',
+            `status`       int(2) DEFAULT NULL COMMENT '状态0 禁用1启用',
+            `canvas_style` longtext DEFAULT NULL COMMENT '样式数据',
+            `canvas_data`  longtext DEFAULT NULL COMMENT '组件数据',
+            PRIMARY KEY (`id`),
+            CONSTRAINT `canvas_data` CHECK (json_valid(`canvas_data`)),
+            CONSTRAINT `canvas_style` CHECK (json_valid(`canvas_style`))
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='主题表';
+
+        DROP TABLE IF EXISTS `lowcode_pagedata`;
+        CREATE TABLE `lowcode_pagedata`
+        (
+            `id`           int(11) NOT NULL,
+            `theme_id`     int(11) DEFAULT NULL COMMENT '主题id 关联主题表lowcode_theme表',
+            `page_id`      int(11) DEFAULT NULL COMMENT '页面id(备用)',
+            `page_name`    varchar(30) DEFAULT NULL COMMENT '页面名称',
+            `canvas_style` longtext    DEFAULT NULL COMMENT '样式数据',
+            `canvas_data`  longtext    DEFAULT NULL COMMENT '组件数据',
+            PRIMARY KEY (`id`),
+            KEY            `theme_id_uindex` (`theme_id`),
+            CONSTRAINT `canvas_data` CHECK (json_valid(`canvas_data`)),
+            CONSTRAINT `canvas_style` CHECK (json_valid(`canvas_style`))
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='主题表';
+
+        DROP TABLE IF EXISTS `manufacturer`;
+        CREATE TABLE `manufacturer`
+        (
+            `id`              int(11) NOT NULL AUTO_INCREMENT,
+            `manufactorname`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '厂家名称',
+            `manufactorphone` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '厂家电话',
+            `origin`          varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '产地',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+
+        CREATE TABLE `master_template`
+        (
+         `id` int(11) NOT NULL AUTO_INCREMENT,
+         `theme` varchar(255) DEFAULT NULL COMMENT '主题',
+         `page_name` varchar(255) DEFAULT NULL COMMENT '页面名称',
+         `template_type` varchar(255) DEFAULT NULL COMMENT '组件类型',
+         `title` varchar(255) DEFAULT NULL COMMENT '模板标题',
+         `imgurl` varchar(255) DEFAULT NULL COMMENT '封面图',
+         `remark` varchar(255) DEFAULT NULL COMMENT '描述',
+         `canvas_style_data` longtext DEFAULT NULL COMMENT '页面全局数据',
+         `component_data` longtext DEFAULT NULL COMMENT '画布组件数据',
+         `status` int(11) DEFAULT NULL COMMENT '显示状态 0不显示，1显示，2假删除',
+         `release` int(11) DEFAULT NULL COMMENT '发布状态 0不发布，1发布',
+         `add_user` varchar(100) DEFAULT NULL COMMENT '创建的用户',
+         `update_user` varchar(255) DEFAULT NULL COMMENT '修改的用户',
+         `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
+         `updata_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '修改时间',
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+        DROP TABLE IF EXISTS `mj_sp`;
+        CREATE TABLE `mj_sp`
+        (
+            `id`   int(11) NOT NULL AUTO_INCREMENT,
+            `mjid` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `spid` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `operationtime`;
+        CREATE TABLE `operationtime`
+        (
+            `id`      int(11) NOT NULL AUTO_INCREMENT,
+            `drid`    int(11) DEFAULT NULL,
+            `drtime`  datetime     DEFAULT NULL COMMENT '维护时间',
+            `user_id` int(11) DEFAULT NULL COMMENT '确认人',
+            `status`  int(2) DEFAULT NULL COMMENT '确认状态1未确认2已确认3已确认且已下发工单',
+            `explain` varchar(100) DEFAULT '' COMMENT '备注',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+        DROP TABLE IF EXISTS page_style;
+        CREATE TABLE page_style
+        (
+            id           int auto_increment comment '主键'
+                primary key,
+            app_id       int                          not null comment '项目id',
+            pic_id       int                          not null comment 'pic表(页面表)主键',
+            canvas_style longtext collate utf8mb4_bin not null comment '样式数据',
+            canvas_data  longtext collate utf8mb4_bin not null comment '组件数据',
+            constraint page_style_pic_id_uindex
+                unique (pic_id),
+            constraint canvas_data
+                check (json_valid(`canvas_data`)),
+            constraint canvas_style
+                check (json_valid(`canvas_style`))
+        ) comment '页面样式表' auto_increment = 12;
+
+        DROP TABLE IF EXISTS structure_diagram_style;
+        CREATE TABLE `structure_diagram_style`
+        (
+            `id`           int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+            `app_id`       int(11) NOT NULL COMMENT '项目id',
+            `drtype_id`    int(11) NOT NULL COMMENT 'pic表(页面表)主键',
+            `canvas_style` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '样式数据',
+            `canvas_data`  longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '组件数据',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `page_style_pic_id_uindex` (`drtype_id`),
+            CONSTRAINT `canvas_data` CHECK (json_valid(`canvas_data`)),
+            CONSTRAINT `canvas_style` CHECK (json_valid(`canvas_style`))
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='结构图页面样式表';
+
+        DROP TABLE IF EXISTS `pic`;
+        CREATE TABLE `pic`
+        (
+            `picid`        int(11) NOT NULL AUTO_INCREMENT,
+            `picname`      varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '页面名称',
+            `parentid`     int(11) NULL DEFAULT NULL,
+            `buildid`      int(11) NULL DEFAULT NULL COMMENT '建筑id',
+            `picmodeid`    int(11) NULL DEFAULT NULL COMMENT '页面模板类型',
+            `img_id`       int(11) NULL DEFAULT NULL COMMENT '图片id/picimage中',
+            `pictype`      int(10) NULL DEFAULT NULL COMMENT '页面类型（设备1，系统0）',
+            `departmentid` int(11) NULL DEFAULT NULL COMMENT '所属部门id',
+            `prioritylv`   int(5) NULL DEFAULT NULL COMMENT '优先级',
+            `color`        varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `root_path`    varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '路由路径',
+            `hyponymy`     varchar(100) DEFAULT NULL COMMENT '上下关系',
+            PRIMARY KEY (`picid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `picedit`;
+        CREATE TABLE `picedit`
+        (
+            `id`          int(11) NOT NULL AUTO_INCREMENT,
+            `picid`       int(11) NULL DEFAULT NULL,
+            `drid`        int(11) NULL DEFAULT NULL,
+            `drshowtype`  varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `showicon`    varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `isshowname`  varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `elemttypeid` int(11) NULL DEFAULT NULL,
+            `picx`        varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `picy`        varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `type`        varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `z_index`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `pich`        int(10) DEFAULT NULL,
+            `picw`        int(10) DEFAULT NULL,
+            `angle`       int(10) DEFAULT NULL,
+            `lng`         varchar(20) DEFAULT NULL,
+            `lat`         varchar(20) DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_activelog`;
+        CREATE TABLE `qs_activelog`
+        (
+            `activelog_id` int(11) NOT NULL AUTO_INCREMENT,
+            `time`         varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `user_name`    varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `dr_typeid`    int(11) NULL DEFAULT NULL,
+            `dr_name`      varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_name`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reg_newvalue` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`activelog_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `qs_alarmlog`;
+        CREATE TABLE `qs_alarmlog`
+        (
+            `id`               int(11) NOT NULL AUTO_INCREMENT,
+            `time`             datetime     DEFAULT NULL,
+            `reg_id`           int(11) DEFAULT NULL,
+            `alarmvalue`       varchar(50)  DEFAULT NULL,
+            `alarmstate`       varchar(10)  DEFAULT NULL,
+            `alarm_level`      varchar(10)  DEFAULT NULL,
+            `alarmanswer`      varchar(50)  DEFAULT NULL,
+            `alarmhandle`      varchar(250) DEFAULT NULL,
+            `username`         varchar(50)  DEFAULT NULL,
+            `usertime`         datetime     DEFAULT NULL,
+            `instructions_url` varchar(150) DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+        DROP TABLE IF EXISTS `qs_ld_jgr`;
+        CREATE TABLE `qs_ld_jgr`
+        (
+            `ld_jg_id`      int(11) NOT NULL AUTO_INCREMENT,
+            `ld_rw_id`      int(11) NULL DEFAULT NULL,
+            `ld_jg_name`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `ld_lx_id`      int(11) NULL DEFAULT NULL,
+            `reg_id`        int(11) NULL DEFAULT NULL,
+            `tag_value`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_id`         int(11) NULL DEFAULT NULL,
+            `pic_id`        int(11) NULL DEFAULT NULL,
+            `pic_parameter` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `phone`         varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `message`       varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reserve`       varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`ld_jg_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ld_log`;
+        CREATE TABLE `qs_ld_log`
+        (
+            `id`       int(11) NOT NULL AUTO_INCREMENT,
+            `ld_tj_id` int(11) NULL DEFAULT NULL,
+            `ld_rw_id` int(11) NULL DEFAULT NULL,
+            `ld_jg_id` int(11) NULL DEFAULT NULL,
+            `type`     int(2) NULL DEFAULT NULL,
+            `state`    int(2) NULL DEFAULT NULL,
+            `time`     datetime(0) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ld_rw`;
+        CREATE TABLE `qs_ld_rw`
+        (
+            `ld_rw_id`      int(11) NOT NULL AUTO_INCREMENT,
+            `ld_rw_name`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `ld_rw_miaoshu` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `rw_type`       int(10) NULL DEFAULT NULL,
+            `dr_type_id`    int(11) NULL DEFAULT NULL,
+            `starttime`     datetime(0) NULL DEFAULT NULL COMMENT '任务开始时间',
+            `endtime`       datetime(0) NULL DEFAULT NULL COMMENT '任务结束时间',
+            `issuspend`     int(5) NULL DEFAULT NULL COMMENT '是否暂停 0开启1暂停',
+            `suspendtime`   datetime(0) NULL DEFAULT NULL COMMENT '暂停截止时间',
+            PRIMARY KEY (`ld_rw_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `qs_ld_tgr`;
+        CREATE TABLE `qs_ld_tgr`
+        (
+            `ld_tj_id`     int(11) NOT NULL AUTO_INCREMENT,
+            `ld_rw_id`     int(11) NULL DEFAULT NULL,
+            `ld_tj_name`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `tj_type`      int(5) NULL DEFAULT NULL,
+            `reg_id`       int(11) NULL DEFAULT NULL,
+            `value_min`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value_max`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value_and_or` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `time`         varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
+            `state`        varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '任务状态',
+            PRIMARY KEY (`ld_tj_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_link_jg`;
+        CREATE TABLE `qs_link_jg`
+        (
+            `jg_id`   int(10) NOT NULL AUTO_INCREMENT,
+            `jg_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`jg_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_link_jg_info`;
+        CREATE TABLE `qs_link_jg_info`
+        (
+            `id`            int(10) NOT NULL AUTO_INCREMENT,
+            `jg_id`         int(10) NULL DEFAULT NULL,
+            `reg_id`        int(10) NULL DEFAULT NULL,
+            `value`         varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_id`         varchar(255) NULL DEFAULT NULL,
+            `pic_id`        int(11) NULL DEFAULT NULL,
+            `pic_parameter` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `phone`         varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `message`       varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `reserve`       varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_link_rw`;
+        CREATE TABLE `qs_link_rw`
+        (
+            `rw_id`   int(10) NOT NULL AUTO_INCREMENT,
+            `rw_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `tj_id`   int(10) NULL DEFAULT NULL,
+            `jg_id`   int(10) NULL DEFAULT NULL,
+            PRIMARY KEY (`rw_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_link_tj`;
+        CREATE TABLE `qs_link_tj`
+        (
+            `tj_id`   int(10) NOT NULL AUTO_INCREMENT,
+            `tj_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`tj_id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_link_tj_info`;
+        CREATE TABLE `qs_link_tj_info`
+        (
+            `id`        int(10) NOT NULL AUTO_INCREMENT,
+            `tj_id`     int(10) NULL DEFAULT NULL,
+            `reg_id`    int(10) NULL DEFAULT NULL,
+            `min_value` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `max_value` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `relation`  int(2) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_link_log`;
+        CREATE TABLE `qs_link_log`
+        (
+            `id`            int(11) NOT NULL AUTO_INCREMENT,
+            `rw_id`         int(11) DEFAULT NULL COMMENT '任务id',
+            `rw_name`       varchar(30)  DEFAULT NULL COMMENT '任务名',
+            `jg_id`         int(11) DEFAULT NULL COMMENT '结果id',
+            `jg_name`       varchar(20)  DEFAULT NULL COMMENT '结果名称',
+            `reg_name`      varchar(50)  DEFAULT NULL COMMENT '变量名称',
+            `reg_value`     varchar(20)  DEFAULT NULL COMMENT '变量值',
+            `sp_id`         varchar(255) DEFAULT NULL COMMENT '视频id',
+            `sp_name`       varchar(40)  DEFAULT NULL COMMENT '视频名称',
+            `pic_id`        int(11) DEFAULT NULL COMMENT '页面id',
+            `pic_name`      varchar(40)  DEFAULT NULL COMMENT '页面名称',
+            `pic_parameter` varchar(50)  DEFAULT NULL COMMENT '页面参数',
+            `phone`         varchar(40)  DEFAULT NULL COMMENT '手机号',
+            `message`       varchar(150) DEFAULT NULL COMMENT '短信内容',
+            `sendtime`      datetime     DEFAULT NULL COMMENT '联动发送时间',
+            `execute_state` int(11) DEFAULT -1 COMMENT '执行状态(0成功，1失败）',
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
+
+        DROP TABLE IF EXISTS `qs_ms_dz`;
+        CREATE TABLE `qs_ms_dz`
+        (
+            `id`     int(10) NOT NULL AUTO_INCREMENT,
+            `rwid`   int(10) NULL DEFAULT NULL,
+            `dzname` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `time`   varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ms_jb`;
+        CREATE TABLE `qs_ms_jb`
+        (
+            `id`   int(10) NOT NULL AUTO_INCREMENT,
+            `ymd`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `rwid` int(10) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ms_jb_log`;
+        CREATE TABLE `qs_ms_jb_log`
+        (
+            `id`        int(10) NOT NULL AUTO_INCREMENT,
+            `dzid`      int(10) NULL DEFAULT NULL,
+            `dzname`    varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `regname`   varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
+            `value`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `state`     int(1) NULL DEFAULT NULL,
+            `sendtime`  datetime(6) NULL DEFAULT NULL,
+            `finshtime` datetime(6) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ms_jb_time`;
+        CREATE TABLE `qs_ms_jb_time`
+        (
+            `jobid` int(10) NOT NULL AUTO_INCREMENT,
+            `rwid`  int(10) NULL DEFAULT NULL,
+            `dzid`  int(10) NULL DEFAULT NULL,
+            `ymd`   varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `time`  datetime(6) NULL DEFAULT NULL,
+            PRIMARY KEY (`jobid`) USING BTREE
+        ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ms_jg`;
+        CREATE TABLE `qs_ms_jg`
+        (
+            `id`    int(10) NOT NULL AUTO_INCREMENT,
+            `dzid`  int(10) NULL DEFAULT NULL,
+            `regid` int(10) NULL DEFAULT NULL,
+            `value` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_ms_rw`;
+        CREATE TABLE `qs_ms_rw`
+        (
+            `id`       int(10) NOT NULL AUTO_INCREMENT,
+            `drtypeid` int(11) NULL DEFAULT NULL,
+            `msname`   varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
+            `color`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `type`     int(1) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_systemlog`;
+        CREATE TABLE `qs_systemlog`
+        (
+            ` id`                int(11) NOT NULL AUTO_INCREMENT,
+            `user_code`          varchar(255) DEFAULT NULL COMMENT '操作者',
+            `ip`                 varchar(255) DEFAULT NULL COMMENT '地址',
+            `type`               varchar(255) DEFAULT NULL COMMENT '操作类型',
+            `parameter`          varchar(255) DEFAULT NULL COMMENT '参数',
+            `method`             varchar(255) DEFAULT NULL COMMENT '方法名',
+            `operation_type`     varchar(255) DEFAULT NULL COMMENT '操作模块',
+            `operation_time`     datetime     DEFAULT NULL COMMENT '操作时间',
+            `state`              int(3) DEFAULT NULL COMMENT '状态(0 失败 1成功)',
+            `operation_describe` varchar(255) DEFAULT NULL COMMENT '操作描述',
+            PRIMARY KEY (` id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3;
+
+        DROP TABLE IF EXISTS `qs_userloginlog`;
+        CREATE TABLE `qs_userloginlog`
+        (
+            `id`       int(11) NOT NULL AUTO_INCREMENT,
+            `time`     datetime(0) NULL DEFAULT NULL,
+            `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `state`    int(4) NULL DEFAULT NULL,
+            `ip`       varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_work_backhis`;
+        CREATE TABLE `qs_work_backhis`
+        (
+            `id`          int(10) NOT NULL AUTO_INCREMENT,
+            `workid`      int(10) NULL DEFAULT NULL,
+            `backtime`    datetime(6) NULL DEFAULT NULL,
+            `backuser`    varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `backexplain` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_work_picture`;
+        CREATE TABLE `qs_work_picture`
+        (
+            `id`           int(10) NOT NULL AUTO_INCREMENT,
+            `workid`       int(10) NULL DEFAULT NULL,
+            `picture_type` int(2) NULL DEFAULT NULL,
+            `picture_path` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `qs_workorder`;
+        CREATE TABLE `qs_workorder`
+        (
+            `id`          int(11) NOT NULL AUTO_INCREMENT COMMENT '工单id',
+            `drtypeid`    int(11) NULL DEFAULT NULL COMMENT '设备类型id',
+            `drid`        int(11) NULL DEFAULT NULL COMMENT '设备id',
+            `worktime`    datetime(0) NULL DEFAULT NULL COMMENT '派单时间',
+            `workuser`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '派单人',
+            `worklevel`   int(2) NULL DEFAULT NULL COMMENT '工单级别',
+            `executeuser` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '接单人',
+            `executetime` datetime(0) NULL DEFAULT NULL COMMENT '工单处理时间',
+            `finishtime`  datetime(0) NULL DEFAULT NULL COMMENT '工单完成时间',
+            `state`       int(2) NULL DEFAULT NULL COMMENT '工单状态',
+            `workexplain` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '工单描述',
+            `remarks`     varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `appraisevalue` int(11) DEFAULT NULL COMMENT '工单评价星级',
+            `approvestate` int(11) DEFAULT NULL COMMENT '工单审批状态0未审批1已审批',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `qstag`;
+        CREATE TABLE `qstag`
+        (
+            `tagid`        int(11) NOT NULL AUTO_INCREMENT,
+            `tagname`      varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `tagvalue`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `savetime`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `itemdrid`     int(10) NULL DEFAULT NULL,
+            `itemtype`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `itemid`       varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `itemdradd`    varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `itemreadtype` int(1) NULL DEFAULT NULL,
+            `backtime`     varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `updatetime`   varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `itemxs`       varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '系数',
+            `valuetype`    int(2) NULL DEFAULT NULL COMMENT '值类型',
+            PRIMARY KEY (`tagid`) USING BTREE,
+            KEY            `tagname_index` (`tagname`)
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `drllinfo`;
+        CREATE TABLE `drllinfo`
+        (
+            `drllid`   int(10) NOT NULL AUTO_INCREMENT,
+            `drllname` varchar(100) DEFAULT NULL,
+            `drllpath` varchar(200) DEFAULT NULL,
+            PRIMARY KEY (`drllid`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+        INSERT INTO `drllinfo`
+        VALUES (1, 'Modbus-RTU', NULL);
+        INSERT INTO `drllinfo`
+        VALUES (2, 'Modbus-TCP', NULL);
+        INSERT INTO `drllinfo`
+        VALUES (3, 'Modbus-ASC', NULL);
+        INSERT INTO `drllinfo`
+        VALUES (4, 'OPC-Client', NULL);
+        INSERT INTO `drllinfo`
+        VALUES (5, 'Bacnet-IP', NULL);
+        INSERT INTO `drllinfo`
+        VALUES (6, 'Ping-IP', NULL);
+
+        DROP TABLE IF EXISTS `dlldrinfo`;
+        CREATE TABLE `dlldrinfo`
+        (
+            `drid`     int(10) NOT NULL AUTO_INCREMENT,
+            `drname`   varchar(100) DEFAULT NULL,
+            `drllid`   int(100) DEFAULT NULL,
+            `type`     int(1) DEFAULT NULL COMMENT '驱动类型，0--网络，1--串口',
+            `ipport`   varchar(40)  DEFAULT NULL COMMENT 'ip和端口',
+            `com`      varchar(10)  DEFAULT NULL,
+            `baudRate` varchar(10)  DEFAULT NULL,
+            `dataBits` int(2) DEFAULT NULL,
+            `stopBits` varchar(5)   DEFAULT NULL,
+            `parity`   varchar(5)   DEFAULT NULL,
+            `cycle`    int(10) DEFAULT NULL,
+            `MacID`    int(10) DEFAULT NULL,
+            PRIMARY KEY (`drid`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+        DROP TABLE IF EXISTS `drlltype`;
+        CREATE TABLE `drlltype`
+        (
+            `id`       int(10) NOT NULL AUTO_INCREMENT,
+            `drllid`   int(10) DEFAULT NULL,
+            `itemtype` varchar(100) DEFAULT NULL,
+            `itemname` varchar(100) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+        INSERT INTO `drlltype`
+        VALUES (1, 1, '1', '线圈1');
+        INSERT INTO `drlltype`
+        VALUES (2, 1, '2', '开关2');
+        INSERT INTO `drlltype`
+        VALUES (3, 1, '3', '寄存器数据3');
+        INSERT INTO `drlltype`
+        VALUES (4, 1, '4', '外围设备数据4');
+        INSERT INTO `drlltype`
+        VALUES (5, 2, '1', '线圈1');
+        INSERT INTO `drlltype`
+        VALUES (6, 2, '2', '开关2');
+        INSERT INTO `drlltype`
+        VALUES (7, 2, '3', '寄存器数据3');
+        INSERT INTO `drlltype`
+        VALUES (8, 2, '4', '外围设备数据4');
+        INSERT INTO `drlltype`
+        VALUES (9, 3, '1', '线圈1');
+        INSERT INTO `drlltype`
+        VALUES (10, 3, '2', '开关2');
+        INSERT INTO `drlltype`
+        VALUES (11, 3, '3', '寄存器数据3');
+        INSERT INTO `drlltype`
+        VALUES (12, 3, '4', '外围设备数据4');
+        INSERT INTO `drlltype`
+        VALUES (13, 4, '1', '参数');
+        INSERT INTO `drlltype`
+        VALUES (14, 5, '1', 'AI');
+        INSERT INTO `drlltype`
+        VALUES (15, 5, '2', 'AO');
+        INSERT INTO `drlltype`
+        VALUES (16, 5, '3', 'AV');
+        INSERT INTO `drlltype`
+        VALUES (17, 5, '4', 'BI');
+        INSERT INTO `drlltype`
+        VALUES (18, 5, '5', 'BO');
+        INSERT INTO `drlltype`
+        VALUES (19, 5, '6', 'BV');
+        INSERT INTO `drlltype`
+        VALUES (20, 5, '7', 'MI');
+        INSERT INTO `drlltype`
+        VALUES (21, 5, '8', 'MO');
+        INSERT INTO `drlltype`
+        VALUES (22, 5, '9', 'MV');
+        INSERT INTO `drlltype`
+        VALUES (23, 1, '5', '强置单线圈5');
+        INSERT INTO `drlltype`
+        VALUES (24, 1, '6', '预置单寄存器6');
+        INSERT INTO `drlltype`
+        VALUES (25, 1, '15', '写多线圈寄存器15');
+        INSERT INTO `drlltype`
+        VALUES (26, 1, '16', '写多个保持寄存器16');
+        INSERT INTO `drlltype`
+        VALUES (27, 2, '5', '强置单线圈5');
+        INSERT INTO `drlltype`
+        VALUES (28, 2, '6', '预置单寄存器6');
+        INSERT INTO `drlltype`
+        VALUES (29, 2, '15', '写多线圈寄存器15');
+        INSERT INTO `drlltype`
+        VALUES (30, 2, '16', '写多个保持寄存器16');
+        INSERT INTO `drlltype`
+        VALUES (31, 3, '5', '强置单线圈5');
+        INSERT INTO `drlltype`
+        VALUES (32, 3, '6', '预置单寄存器6');
+        INSERT INTO `drlltype`
+        VALUES (33, 3, '15', '写多线圈寄存器15');
+        INSERT INTO `drlltype`
+        VALUES (34, 3, '16', '写多个保持寄存器16');
+        INSERT INTO `drlltype`
+        VALUES (35, 6, '1', 'Ping');
+
+        DROP TABLE IF EXISTS `querycondition`;
+        CREATE TABLE `querycondition`
+        (
+            `conditionId`   int(10) NOT NULL AUTO_INCREMENT,
+            `conditionName` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '',
+            PRIMARY KEY (`conditionId`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `queryconditioninfo`;
+        CREATE TABLE `queryconditioninfo`
+        (
+            `id`          int(10) NOT NULL AUTO_INCREMENT,
+            `filedName`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `filedDbName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `fiedtype`    int(10) NULL DEFAULT NULL,
+            `fiedSql`     varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `conditionId` int(10) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `querydbinfo`;
+        CREATE TABLE `querydbinfo`
+        (
+            `id`          int(10) NOT NULL AUTO_INCREMENT,
+            `dbtype`      int(2) NOT NULL,
+            `conditionId` int(10) NOT NULL,
+            `resultId`    int(10) NOT NULL,
+            `conUrl`      varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci  NOT NULL,
+            `conUserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci   NOT NULL,
+            `conPassword` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci   NOT NULL,
+            `dbname`      varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `dbsql`       varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+            `httpUrl`     varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci  NOT NULL,
+            `comments`    varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `orderfield`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '排序字段',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `queryresult`;
+        CREATE TABLE `queryresult`
+        (
+            `resultId`   int(10) NOT NULL AUTO_INCREMENT,
+            `resultName` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`resultId`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `queryresultinfo`;
+        CREATE TABLE `queryresultinfo`
+        (
+            `id`             int(10) NOT NULL AUTO_INCREMENT,
+            `resultShowName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `resultDbName`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `resulttype`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `resultId`       int(10) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `reg`;
+        CREATE TABLE `reg`
+        (
+            `reg_id`            int(11) NOT NULL AUTO_INCREMENT,
+            `reg_Name`          varchar(50)  DEFAULT NULL,
+            `dr_Id`             int(11) DEFAULT NULL,
+            `reg_Type`          varchar(10)  DEFAULT NULL,
+            `reg_Units`         varchar(10)  DEFAULT NULL,
+            `reg_ReadWrite`     varchar(10)  DEFAULT NULL,
+            `reg_ListShowLevel` varchar(10)  DEFAULT NULL,
+            `reg_sub`           varchar(10)  DEFAULT NULL,
+            `reg_DrShowType`    varchar(10)  DEFAULT NULL,
+            `reg_drsub`         varchar(10)  DEFAULT NULL,
+            `tag_name`          varchar(50)  DEFAULT NULL,
+            `tag_value`         varchar(20)  DEFAULT NULL,
+            `Ishistory`         varchar(10)  DEFAULT NULL,
+            `Isenergy`          varchar(10)  DEFAULT NULL,
+            `Isalarm`           varchar(10)  DEFAULT NULL,
+            `alarmtype`         varchar(10)  DEFAULT NULL,
+            `value_min`         varchar(10)  DEFAULT NULL,
+            `value_max`         varchar(10)  DEFAULT NULL,
+            `and_or`            varchar(10)  DEFAULT NULL,
+            `alarm_level`       varchar(10)  DEFAULT NULL,
+            `tag_alarm_state`   varchar(10)  DEFAULT NULL,
+            `tag_time`          varchar(10)  DEFAULT NULL,
+            `regmath`           varchar(100) DEFAULT NULL,
+            `regcolor`          varchar(20)  DEFAULT NULL,
+            `islistshow`        int(2) DEFAULT NULL,
+            PRIMARY KEY (`reg_id`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+        DROP TABLE IF EXISTS `regalarminfo`;
+        CREATE TABLE `regalarminfo`
+        (
+            `id`              int(10) NOT NULL AUTO_INCREMENT,
+            `reg_id`          int(10) NOT NULL,
+            `regname`         varchar(255) DEFAULT NULL,
+            `value_min`       varchar(10)  DEFAULT NULL,
+            `value_max`       varchar(10)  DEFAULT NULL,
+            `and_or`          varchar(10)  DEFAULT NULL,
+            `alarm_level`     varchar(10)  DEFAULT NULL,
+            `alarmtype`       varchar(10)  DEFAULT NULL,
+            `alarmexplain`    varchar(500) DEFAULT NULL,
+            `instructions_id` varchar(10)  DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE,
+            KEY               `reg_alarm_level_sy` (`reg_id`,`alarm_level`) USING BTREE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
+
+        DROP TABLE IF EXISTS `scanup`;
+        CREATE TABLE `scanup`
+        (
+            `id`       int(11) NOT NULL AUTO_INCREMENT,
+            `time`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `scanID`   int(11) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `spinfo`;
+        CREATE TABLE `spinfo`
+        (
+            `id`          int(11) NOT NULL AUTO_INCREMENT,
+            `sp_id`       varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_dll_path` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_ip`       varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_port`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_camera`   varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '相机',
+            `sp_user`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '使用者',
+            `sp_password` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sp_ptztype`  varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `monitor`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '监控',
+            `sp_type`     int(5) NULL DEFAULT NULL COMMENT '摄像头类型 1海康2大华',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `storeroom`;
+        CREATE TABLE `storeroom`
+        (
+            `id`               int(11) NOT NULL AUTO_INCREMENT,
+            `roomname`         varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `storeroomExplain` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `sub`;
+        CREATE TABLE `sub`
+        (
+            `subid`   int(11) NOT NULL AUTO_INCREMENT,
+            `subname` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`subid`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        insert into sub
+        select *
+        from zsqy_v2.sub;
+
+        DROP TABLE IF EXISTS `subinfo`;
+        CREATE TABLE `subinfo`
+        (
+            `id`         int(11) NOT NULL AUTO_INCREMENT,
+            `subid`      int(11) NULL DEFAULT NULL,
+            `value_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value`      varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value_min`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `value_max`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `and_or`     varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `text`       varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `url`        varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        insert into subinfo
+        select *
+        from zsqy_v2.subinfo;
+
+
+        DROP TABLE IF EXISTS `sysmenuinfo`;
+        CREATE TABLE `sysmenuinfo`
+        (
+            `id`        int(11) NOT NULL AUTO_INCREMENT,
+            `menuName`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `parentId`  int(11) NULL DEFAULT NULL,
+            `menuPath`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `menuLevel` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `picid`     int(11) NULL DEFAULT NULL,
+            `isshow`    varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `menuindex` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `temp`;
+        CREATE TABLE `temp`
+        (
+            `id`   int(10) NOT NULL AUTO_INCREMENT,
+            `temp` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `timemode`;
+        CREATE TABLE `timemode`
+        (
+            `id`           int(11) NOT NULL AUTO_INCREMENT,
+            `timemodeName` varchar(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '时间模式名称',
+            `modeExplain`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '说明',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `timemodeinfo`;
+        CREATE TABLE `timemodeinfo`
+        (
+            `id`         int(11) NOT NULL AUTO_INCREMENT,
+            `timemodeid` int(10) NULL DEFAULT NULL COMMENT 'timemode表id',
+            `ld_tj_id`   int(10) NULL DEFAULT NULL COMMENT '条件id',
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB
+          CHARACTER SET = utf8
+          COLLATE = utf8_general_ci
+          ROW_FORMAT = Dynamic;
+
+
+        DROP TABLE IF EXISTS `timemodejob`;
+        CREATE TABLE `timemodejob`
+        (
+            `id`         int(11)     NOT NULL AUTO_INCREMENT,
+            `timemodeid` int(11)     NULL DEFAULT NULL,
+            `ld_tj_id`   int(11)     NULL DEFAULT NULL,
+            `time`       datetime(0) NULL DEFAULT NULL,
+            `ld_rw_id`   int(11)     NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB
+          CHARACTER SET = utf8
+          COLLATE = utf8_general_ci
+          ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `type_layout`;
+        CREATE TABLE `type_layout`
+        (
+            `id`         int(11) NOT NULL AUTO_INCREMENT COMMENT '设备类型布局id',
+            `type_id`    int(11) NOT NULL COMMENT '设备类型id',
+            `type_index` int(11) NOT NULL COMMENT '设备类型布局索引',
+            `user_id`    int(11) NOT NULL COMMENT '用户id',
+            PRIMARY KEY (`id`)
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = utf8 COMMENT ='设备类型布局';
+
+        DROP TABLE IF EXISTS `user_alarmlevel`;
+        CREATE TABLE `user_alarmlevel`
+        (
+            `id`         int(10) NOT NULL AUTO_INCREMENT,
+            `userid`     int(10) NULL DEFAULT NULL,
+            `alarmlevel` int(10) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB
+          CHARACTER SET = utf8
+          COLLATE = utf8_general_ci
+          ROW_FORMAT = Dynamic;
+
+        CREATE TABLE `send_msg_log`
+        (
+            `log_id`       int(10) NOT NULL AUTO_INCREMENT,
+            `send_phone`   varchar(20)  DEFAULT NULL,
+            `send_time`    datetime(6)  DEFAULT NULL,
+            `send_content` varchar(100) DEFAULT NULL,
+            `user_name`    varchar(20)  DEFAULT NULL,
+            `state`        int(2)       DEFAULT NULL,
+            PRIMARY KEY (`log_id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+        DROP TABLE IF EXISTS `sms_dr`;
+        CREATE TABLE `sms_dr`
+        (
+            `id`        int(10) NOT NULL AUTO_INCREMENT,
+            `drid`      int(10) NULL DEFAULT NULL,
+            `sendname`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sendphone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `email`     varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `sms_log`;
+        CREATE TABLE `sms_log`
+        (
+            `id`          int(10) NOT NULL AUTO_INCREMENT,
+            `sendtime`    datetime(6) NULL DEFAULT NULL,
+            `sendphone`   varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sendcontent` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sendname`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `sendstate`   int(2) NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP TABLE IF EXISTS `usergroup`;
+        CREATE TABLE `usergroup`
+        (
+            `id`            int(11) NOT NULL AUTO_INCREMENT,
+            `usergroupname` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            `qx`            varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        ) ENGINE = InnoDB  CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+        DROP PROCEDURE IF EXISTS `savedata10`;
+        CREATE PROCEDURE `savedata10`(in intime VARCHAR (50), in dbname VARCHAR (50))
+        BEGIN
+	DECLARE
+        sqltagName VARCHAR(50);
+	DECLARE
+        sqltagVaule VARCHAR(20);
+	DECLARE
+        done INT DEFAULT FALSE;
+	DECLARE
+        MyCursor CURSOR FOR ( SELECT tagname, tagvalue FROM qstag where savetime='10');
+	DECLARE
+        CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+        OPEN MyCursor;
+        myLoop
+        : LOOP
+    FETCH MyCursor into sqltagName, sqltagVaule; 
+    IF
+        done THEN
+      LEAVE myLoop;
+        END IF;
+			SET
+        @sqlStmt = CONCAT("INSERT INTO ",dbname,".",sqltagName,"(time,tagname,tagvalue) VALUES ('",intime,"','",sqltagName,"','",sqltagVaule,"')");
+        PREPARE stmt FROM @sqlStmt;
+        EXECUTE stmt;
+        END LOOP
+        myLoop;
+        CLOSE MyCursor;
+        END
+;
+
+        DROP PROCEDURE IF EXISTS `savedata30`;
+        CREATE PROCEDURE `savedata30`(in intime VARCHAR (50), in dbname VARCHAR (50))
+        BEGIN
+	DECLARE
+        sqltagName VARCHAR(50);
+	DECLARE
+        sqltagVaule VARCHAR(20);
+	DECLARE
+        done INT DEFAULT FALSE;
+	DECLARE
+        MyCursor CURSOR FOR ( SELECT tagname, tagvalue FROM qstag where savetime='30');
+	DECLARE
+        CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+        OPEN MyCursor;
+        myLoop
+        : LOOP
+    FETCH MyCursor into sqltagName, sqltagVaule; 
+    IF
+        done THEN
+      LEAVE myLoop;
+        END IF;
+			SET
+        @sqlStmt = CONCAT("INSERT INTO ",dbname,".",sqltagName,"(time,tagname,tagvalue) VALUES ('",intime,"','",sqltagName,"','",sqltagVaule,"')");
+        PREPARE stmt FROM @sqlStmt;
+        EXECUTE stmt;
+        END LOOP
+        myLoop;
+        CLOSE MyCursor;
+        END
+;
+
+
+        DROP PROCEDURE IF EXISTS `savedata5`;
+        CREATE PROCEDURE `savedata5`(in intime VARCHAR (50), in dbname VARCHAR (50), in id int)
+        BEGIN
+	DECLARE
+        sqltagName VARCHAR(50);
+	DECLARE
+        sqltagVaule VARCHAR(20);
+	DECLARE
+        done INT DEFAULT FALSE;
+	DECLARE
+        MyCursor CURSOR FOR ( SELECT tagname, tagvalue FROM qstag where savetime='5' and tagid%10=id);
+	DECLARE
+        CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+        OPEN MyCursor;
+        myLoop
+        : LOOP
+    FETCH MyCursor into sqltagName, sqltagVaule; 
+    IF
+        done THEN
+      LEAVE myLoop;
+        END IF;
+			SET
+        @sqlStmt = CONCAT("INSERT INTO ",dbname,".",sqltagName,"(time,tagname,tagvalue) VALUES ('",intime,"','",sqltagName,"','",sqltagVaule,"')");
+        PREPARE stmt FROM @sqlStmt;
+        EXECUTE stmt;
+        END LOOP
+        myLoop;
+        CLOSE MyCursor;
+        END
+;
+
+        DROP PROCEDURE IF EXISTS `savedata60`;
+        CREATE PROCEDURE `savedata60`(in intime VARCHAR (50), in dbname VARCHAR (50))
+        BEGIN
+	DECLARE
+        sqltagName VARCHAR(50);
+	DECLARE
+        sqltagVaule VARCHAR(20);
+	DECLARE
+        done INT DEFAULT FALSE;
+	DECLARE
+        MyCursor CURSOR FOR ( SELECT tagname, tagvalue FROM qstag where savetime='60');
+	DECLARE
+        CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+        OPEN MyCursor;
+        myLoop
+        : LOOP
+    FETCH MyCursor into sqltagName, sqltagVaule; 
+    IF
+        done THEN
+      LEAVE myLoop;
+        END IF;
+			SET
+        @sqlStmt = CONCAT("INSERT INTO ",dbname,".",sqltagName,"(time,tagname,tagvalue) VALUES ('",intime,"','",sqltagName,"','",sqltagVaule,"')");
+        PREPARE stmt FROM @sqlStmt;
+        EXECUTE stmt;
+        END LOOP
+        myLoop;
+        CLOSE MyCursor;
+        END
+;
+
+SET
+        FOREIGN_KEY_CHECKS = 1;
+
+
+    </select>
+    <delete id="deleteDBByid">
+        drop
+        database if exists `${appname}`;
+    </delete>
+    <update id="removeObject">
+        update zsqy_v2.appmanager
+        <set>
+            state=#{state}
+        </set>
+        where appid in
+        <foreach collection="appids" open="("
+                 close=")"
+                 separator=","
+                 item="id">
+            #{id}
+        </foreach>
+    </update>
+    <select id="findObjectByappName" resultType="int">
+        SELECT COUNT(*) FROM zsqy_v2.appmanager
+        <where>
+            appName=#{appName}
+        </where>
+    </select>
+    <select id="findObjectByUserid" resultType="com.photonstudio.pojo.Appmanager">
+
+        select * from zsqy_v2.appmanager
+        <where>
+            1=1
+
+            <if test="userid!=null">
+                and appid in (select appid from zsqy_v2.appusergroup where userid=#{userid} )
+            </if>
+            and state=#{state} and appstate=#{appstate}
+        </where>
+
+    </select>
+</mapper>
+

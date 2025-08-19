@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.JgtModeMapper">
+	<delete id="deleteAll">
+		delete from `${dBname}`.jgtmode where typeid=#{drtypeid}
+	</delete>
+	<delete id="deleteDrtypeElements">
+		delete from `${dBname}`.drtype_elements where jgtmodeid in (select id from `${dBname}`.jgtmode where typeid=#{drtypeid})
+	</delete>
+	<delete id="deleteDrtypeElements2">
+		delete from `${dBname}`.drtype_elements where jgtmodeid in
+		<foreach collection="id"
+				 item="jgtmodeId"
+				 index="index"
+				 open="(" close=")"
+				 separator=",">
+		#{jgtmodeId}
+		</foreach>
+	</delete>
+	<delete id="delete">
+		delete from `${dBname}`.jgtmode
+		where id in
+		<foreach collection="id"
+				 item="jgtmodeId"
+				 index="index"
+				 open="(" close=")"
+				 separator=",">
+			#{jgtmodeId}
+		</foreach>
+
+	</delete>
+	<select id="findJgtBydrtypeid" resultType="com.photonstudio.pojo.Jgtmode">
+		select * from `${dBname}`.jgtmode where typeid=#{drtypeid}
+	</select>
+	<select id="findJgtById" resultType="com.photonstudio.pojo.Jgtmode">
+		select * from `${dBname}`.jgtmode where id=#{id}
+	</select>
+	<select id="findDrtypemodeByLevel" resultType="com.photonstudio.pojo.Drtypemode">
+		select * from `${dBname}`.drtypemode where drtypeid=#{drtypeid} and reg_listShowLevel=#{typemodelevel}
+	</select>
+	<select id="findDrtypemode" resultType="com.photonstudio.pojo.Drtypemode">
+		select * from `${dBname}`.drtypemode where drtypeid=#{drtypeid}
+	</select>
+<insert id="saveJgtMode">
+	insert into `${dBname}`.jgtmode  (typeid,typemodelevel,elemttypeid,jgtx,jgty,
+	z_index,type,jgth,jgtw,angle)
+ 	   values (#{jgtmode.typeid}, #{jgtmode.typemodelevel},#{jgtmode.elemttypeid},
+ 	   #{jgtmode.jgtx},#{jgtmode.jgty},#{jgtmode.zIndex},
+ 	   #{jgtmode.type},#{jgtmode.jgth},#{jgtmode.jgtw},#{jgtmode.angle});
+</insert>
+
+<update id="updateJgt">
+	update `${dBname}`.jgtmode set jgtx=#{jgtx},jgty=#{jgty},jgth=#{jgth},jgtw=#{jgtw},z_index=#{zIndex},angle=#{angle} where id=#{id}
+</update>
+
+<update id="updateJgtmodeElements">
+	update `${dBname}`.drtype_elements set text=#{drtypeElements.text},
+		imgid=#{drtypeElements.imgid},elemtstyle=#{drtypeElements.elemtstyle},Bdregmode=#{drtypeElements.Bdregmode},
+		subid=#{drtypeElements.subid} where elemtsid=#{drtypeElements.elemtsid}
+</update>
+
+<select id="findDrtypeElements" resultType="com.photonstudio.pojo.DrtypeElements">
+		select a.*,b.imgurl from `${dBname}`.drtype_elements a
+		left join `${dBname}`.images b on a.imgid =b.imgid
+		where jgtmodeid=#{jgtmodeid}
+	</select>
+
+<insert id="insertDrtypeElements">
+	insert into `${dBname}`.drtype_elements  (jgtmodeid,elemttypeid,elemtELtype,elemtlevel,elemtstyle,
+	text,imgid,Bdregmode,subid,elemtmodename)
+ 	   values (#{drtypeElements.jgtmodeid}, #{drtypeElements.elemttypeid},#{drtypeElements.elemtELtype},
+ 	   #{drtypeElements.elemtlevel},#{drtypeElements.elemtstyle},#{drtypeElements.text},
+ 	   #{drtypeElements.imgid},#{drtypeElements.Bdregmode},#{drtypeElements.subid},#{drtypeElements.elemtmodename});
+</insert>
+
+<select id="getJgtjgtmodeid" resultType="Integer">
+   		select @@IDENTITY
+  	</select>
+
+</mapper>

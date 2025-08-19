@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.DrtypeinfoMapper">
+	
+	<select id="findObjectByParentId" resultType="com.photonstudio.pojo.Drtypeinfo">
+	 select a.*,b.picmodeid,c.icontype from `${dBname}`.drtypeinfo a left join `${dBname}`.pic b 
+	 on a.picid = b.picid left join zsqy_v2.icon c on a.drtypeiconid =c.iconid
+	 <where>
+	  a.parentid=#{parentid} 
+	   <if test="iscustomType!=null">
+	   and a.iscustom_type=#{iscustomType}
+	 </if>
+	 </where>
+	 </select>
+	 <select id="findWorkorderByDrtype" resultType="double">
+	 SELECT ifnull(((SELECT COUNT(DISTINCT drid) FROM `${dBname}`.qs_workorder WHERE drtypeid=
+	 #{drtypeid} and  executetime &gt;= #{date2} and executetime &lt; #{date3})
+	 -(SELECT COUNT(DISTINCT drid) FROM `${dBname}`.qs_workorder WHERE 
+	 drtypeid=#{drtypeid} and executetime &gt;= #{date1} and executetime &lt; #{date2})
+	 )/(SELECT COUNT(*) FROM `${dBname}`.drinfo WHERE drtypeid=#{drtypeid}),0)
+	 </select>
+	 <select id="findBasisDrtype" resultType="Drtypeinfo">
+	 SELECT * FROM `${dBname}`.drtypeinfo WHERE drtypeid NOT IN(SELECT DISTINCT parentid FROM `${dBname}`.drtypeinfo)
+	 </select>
+	<select id="findDrinfoByDrtypeid" resultType="com.photonstudio.pojo.Drinfo">
+		select m.*,n.iconname,CONCAT(#{staticAccessPath},'images/icon/',n.icontype,'/run.',n.iconsuffix) as icontype from
+		(select a.*,b.drtypeiconid ,b.drtypename  from `${dBname}`.drinfo a,`${dBname}`.drtypeinfo b where  a.drtypeid = b.drtypeid
+		<if test="drtypeid!=null">
+			and  a.drtypeid=#{drtypeid}
+		</if>
+		<if test="drid!=null and drid!=''">
+			and a.drid=#{drid}
+		</if>)
+		m,zsqy_v2.icon n
+		where m.drtypeiconid=n.iconid
+		<if test="drname!=null and drname!=''">
+			and m.drname like concat("%",#{drname},"%")
+		</if>
+
+	</select>
+	 <select id="findObjectByDrtypeid" resultType="Drtypeinfo">
+	 select * from `${dBname}`.drtypeinfo
+	 <where>
+	 drtypeid=#{drtypeid}
+	 </where>
+	 </select>
+	 <select id="findCountByParentId" resultType="int">
+	 select count(*) from `${dBname}`.drtypeinfo
+	 <where>
+	  parentid=#{drtypeid} 
+	 </where>
+	 </select>
+	 <select id="findDrtypeinfoByDrid" resultType="Drtypeinfo">
+	 select * from `${dBname}`.drtypeinfo 
+	 <where>
+	 drtypeid=(select drtypeid from `${dBname}`.drinfo where drid =#{drid})
+	 </where>
+	 </select>
+	 <select id="findAllDrtypeAndDr" resultType="com.photonstudio.pojo.Drtypeinfo">
+	 select * from `${dBname}`.drtypeinfo
+	 <where>
+	 <if test="iscustomType!=null">
+	 iscustom_type=#{iscustomType}
+	 </if>
+	 </where>
+	 
+	 </select>
+	 
+	 <select id="findObjectByiscustomType" resultType="com.photonstudio.pojo.Drtypeinfo">
+	 select * from `${dBname}`.drtypeinfo
+	 <where>
+	 <if test="iscustomType!=null">
+	 iscustom_type=#{iscustomType}
+	 </if>
+	 </where>
+	 <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+	 </select>
+	 <select id="getRowCountByiscustomType" resultType="int">
+	 select count(*) from `${dBname}`.drtypeinfo
+	  <where>
+	 <if test="iscustomType!=null">
+	 iscustom_type=#{iscustomType}
+	 </if>
+	 </where>
+	 </select>
+	 <select id="findAllDrtypeJgtr" resultType="com.photonstudio.pojo.Drtypeinfo">
+	 select * from `${dBname}`.drtypeinfo where isdrtype=1
+	 </select>
+	 
+	  <delete id="deleteObjectById">
+	 delete from `${dBname}`.regalarminfo where reg_id in (select reg_id from `${dBname}`.reg where dr_Id in (select drid from `${dBname}`.drinfo where drtypeid = #{drtypeid}));
+     delete from `${dBname}`.reg where dr_Id in(select drid from `${dBname}`.drinfo where drtypeid = #{drtypeid});
+     delete from `${dBname}`.picedit where drid in(select drid from `${dBname}`.drinfo where drtypeid = #{drtypeid});
+     delete from `${dBname}`.drinfo where drtypeid = #{drtypeid};
+     delete from `${dBname}`.drtypemode where drtypeid = #{drtypeid};
+	 delete from `${dBname}`.drtypeinfo where drtypeid = #{drtypeid};
+ 	
+ 	</delete>
+	<delete id="deleteTypeAndModeById">
+		delete from `${dBname}`.drtypemode where drtypeid = #{drtypeid};
+		delete from `${dBname}`.drtypeinfo where drtypeid = #{drtypeid};
+	</delete>
+ 	<select id="findChildrenId" resultType="int">
+	 	SELECT drtypeid FROM `${dBname}`.drtypeinfo WHERE parentid=#{drtypeid}
+	 </select>
+	 
+ 	   <insert id="insertObject">
+	 insert into `${dBname}`.drtypeinfo (drtypeid,drtypename,parentid,
+	 drtypeiconid,isshow,isdrtype,iscustom_type,picid,parameter_display,parameter_list) values
+	 (#{drtypeinfo.drtypeid},#{drtypeinfo.drtypename},#{drtypeinfo.parentid},
+	 #{drtypeinfo.drtypeiconid},#{drtypeinfo.isshow},#{drtypeinfo.isdrtype},
+	 #{drtypeinfo.iscustomType}, #{drtypeinfo.picid},#{drtypeinfo.parameterDisplay},#{drtypeinfo.parameterList})
+	   </insert>
+	   <update id="updateObject">
+	   	update `${dBname}`.drtypeinfo 
+ 	<set>
+             <if test="drtypeinfo.drtypename!=null and drtypeinfo.drtypename!=''">
+               drtypename=#{drtypeinfo.drtypename},
+             </if>
+             <if test="drtypeinfo.parentid!=null ">
+                  parentid=#{drtypeinfo.parentid},
+             </if>
+             <if test="drtypeinfo.drtypeiconid!=null">
+                drtypeiconid=#{drtypeinfo.drtypeiconid},
+             </if>
+              <if test="drtypeinfo.isshow!=null">
+                isshow=#{drtypeinfo.isshow},
+             </if>
+             <if test="drtypeinfo.isdrtype!=null">
+                isdrtype=#{drtypeinfo.isdrtype},
+             </if>
+             <if test="drtypeinfo.iscustomType!=null">
+             	iscustom_type=#{drtypeinfo.iscustomType},
+             </if>
+             	picid=#{drtypeinfo.picid},
+			 parameter_display=#{drtypeinfo.parameterDisplay},
+			 parameter_list=#{drtypeinfo.parameterList}
+          </set>
+          where drtypeid=#{drtypeinfo.drtypeid} 
+	   </update>
+	   <select id="findModeList" resultType="com.photonstudio.pojo.Drtypemode">
+	    select * from `${dBname}`.drtypemode where drtypeid=#{drtypeid}
+	   </select>
+	   <delete id="deleteDrtypeinfoById">
+	    delete from `${dBname}`.drtypeinfo where drtypeid=#{drtypeid}
+	   </delete>
+	   <select id="findDrtypeinfoBytypeid" resultType="com.photonstudio.pojo.Drtypeinfo">
+		 select * from `${dBname}`.drtypeinfo where drtypeid=#{drtypeid}
+	 </select>
+</mapper>

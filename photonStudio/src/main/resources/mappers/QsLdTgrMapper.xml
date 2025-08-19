@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsLdTgrMapper">
+	<select id="findObject" resultType="QsLdTgr">
+	select a.*,b.ld_rw_name,c.reg_Name from `${dBname}`.qs_ld_tgr a
+	left join `${dBname}`.qs_ld_rw b on a.ld_rw_id=b.ld_rw_id 
+	left join `${dBname}`.reg c on a.reg_id=c.reg_id
+	  <where>
+		a.tj_type=#{tjType}
+	  </where>
+	  <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+      </if>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.qs_ld_tgr a
+	left join `${dBname}`.qs_ld_rw b on a.ld_rw_id=b.ld_rw_id 
+	left join `${dBname}`.reg c on a.reg_id=c.reg_id
+	<where>
+		a.tj_type=#{tjType}
+	  </where>
+	</select>
+	<select id="findObjectById" resultType="int">
+	select count(*) from `${dBname}`.qs_ld_tgr 
+	<where>
+		ld_tj_id=#{id}
+	  </where>
+	</select>
+	<select id="findObjectByldTjId" resultType="QsLdTgr">
+	select * from `${dBname}`.qs_ld_tgr 
+	<where>
+		ld_tj_id=#{ldTjId}
+	  </where>
+	</select>
+	<select id="findObjectByLdRwId" resultType="QsLdTgr">
+	select a.*,b.ld_rw_name,c.reg_Name from `${dBname}`.qs_ld_tgr a
+	left join `${dBname}`.qs_ld_rw b on a.ld_rw_id=b.ld_rw_id 
+	left join `${dBname}`.reg c on a.reg_id=c.reg_id
+	  <where>
+		a.ld_rw_id=#{ldRwId}
+	  </where>
+	</select>
+	<select id="findObjectByLdRwIdAndTjType" resultType="QsLdTgr">
+		select a.*,b.ld_rw_name,c.reg_Name from `${dBname}`.qs_ld_tgr a
+	left join `${dBname}`.qs_ld_rw b on a.ld_rw_id=b.ld_rw_id 
+	left join `${dBname}`.reg c on a.reg_id=c.reg_id
+	  <where>
+	  1=1
+	  <if test="ldRwId!=null">
+		and a.ld_rw_id=#{ldRwId} 
+	  </if>
+	  <if test="tjType!=null">
+	  and a.tj_type=#{tjType}
+	  </if>
+	  </where>
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.qs_ld_tgr (ld_rw_id,ld_tj_name,tj_type,reg_id,value_min,
+	value_max,value_and_or,time) values (#{qsLdTgr.ldRwId},#{qsLdTgr.ldTjName},#{qsLdTgr.tjType},
+	#{qsLdTgr.regId},#{qsLdTgr.valueMin},#{qsLdTgr.valueMax},#{qsLdTgr.valueAndOr},
+	#{qsLdTgr.time})
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.qs_ld_tgr 
+	<where>
+	ld_tj_id in 
+	 <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+	</delete>
+	<delete id="deleteObjectByRwId">
+	delete from `${dBname}`.qs_ld_tgr 
+	<where>
+	ld_rw_id in 
+	 <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+         </where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.qs_ld_tgr 
+	<set>
+	<if test="qsLdTgr.ldRwId!=null and qsLdTgr.ldRwId!=''">
+	ld_rw_id=#{qsLdTgr.ldRwId},
+	</if>
+	<if test="qsLdTgr.ldTjName!=null and qsLdTgr.ldTjName!=''">
+	ld_tj_name=#{qsLdTgr.ldTjName},
+	</if>
+	<if test="qsLdTgr.regId!=null and qsLdTgr.regId!=''">
+	reg_id=#{qsLdTgr.regId},
+	</if>
+	<if test="qsLdTgr.valueMin!=null and qsLdTgr.valueMin!=''">
+	value_min=#{qsLdTgr.valueMin},
+	</if>
+	<if test="qsLdTgr.valueMax!=null and qsLdTgr.valueMax!=''">
+	value_max=#{qsLdTgr.valueMax},
+	</if>
+	<if test="qsLdTgr.valueAndOr!=null and qsLdTgr.valueAndOr!=''">
+	value_and_or=#{qsLdTgr.valueAndOr},
+	</if>
+	<if test="qsLdTgr.time!=null and qsLdTgr.time!=''">
+	time=#{qsLdTgr.time},
+	</if>
+	ld_tj_id=#{qsLdTgr.ldTjId}
+	</set>
+	<where>
+	ld_tj_id=#{qsLdTgr.ldTjId}
+	</where>
+	</update>
+</mapper>

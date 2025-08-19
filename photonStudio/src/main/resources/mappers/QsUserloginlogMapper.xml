@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsUserloginlogMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.QsUserloginlog">
+	select * from `${dBname}`.qs_userloginlog 
+	<where>
+	1=1
+	<if test="username!=null and username!=''">
+		and username like concat("%",#{username},"%") 
+	</if>
+	<if test="startTime!=null">
+	   and time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	   and time &lt;= #{endTime} 
+	</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.qs_userloginlog
+		<where>
+	1=1
+	<if test="username!=null and username!=''">
+		and username like concat("%",#{username},"%") 
+	</if>
+	<if test="startTime!=null">
+	   and time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	   and time &lt;= #{endTime} 
+	</if>
+	</where>
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.qs_userloginlog (time,username,state,ip) 
+	values (#{qsUserloginlog.time},#{qsUserloginlog.username},
+	#{qsUserloginlog.state},#{qsUserloginlog.ip})
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.qs_userloginlog 
+	<where>
+		id in
+		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.qs_userloginlog 
+	<set>
+	<if test="qsUserloginlog.time!=null">
+	time=#{qsUserloginlog.time},
+	</if>
+	<if test="qsUserloginlog.username!=null and qsUserloginlog.username!=''">
+	username=#{qsUserloginlog.username},
+	</if>
+	<if test="qsUserloginlog.state!=null">
+	state=#{qsUserloginlog.state},
+	</if>
+	<if test="qsUserloginlog.ip!=null and qsUserloginlog.ip!=''">
+	ip=#{qsUserloginlog.ip},
+	</if>
+	id=#{qsUserloginlog.id}
+	</set>
+	<where>
+	id=#{qsUserloginlog.id}
+	</where>
+	</update>
+</mapper>

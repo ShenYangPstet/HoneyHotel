@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.RegdataMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Regdata">
+	select * from `${dBname}`.`${tagname}`
+	<where>
+	<if test="startTime!=null">
+	   and time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	   and time &lt;= #{endTime} 
+	</if>
+	</where>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.`${tagname}`
+	<where>
+	<if test="startTime!=null">
+	   and time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	   and time &lt;= #{endTime} 
+	</if>
+	</where>
+	</select>
+	<select id="findSavetimeByTagname" resultType="string">
+	select savetime from `${dBname}`.qstag 
+	<where>
+	tagname=#{tagname}
+	</where>
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.`${tagname}` (time,tagname,tagvalue) values 
+	(#{regdata.time},#{regdata.tagname},#{regdata.tagvalue})
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.`${tagname}` 
+	<where>
+	id in<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where> 
+	</delete>
+	<select id="getDataBase" resultType="int">
+	select COUNT(*) from information_schema.SCHEMATA  where SCHEMA_NAME = #{dBname};
+	</select>
+	<select id="getTable" resultType="int">
+	select COUNT(*) from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA=#{dBname} and  TABLE_NAME=#{tagname};
+	</select>
+	<insert id="createtable">
+	create table if not EXISTS `${dBname}`.`${tagname}` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `time` datetime NOT NULL,
+  `tagname` varchar(50) DEFAULT NULL,
+  `tagvalue` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `time` (`time`) USING HASH
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+	</insert>
+	<update id="updatetable">
+	alter table `${dBname}`.`${tagname}` rename `${dBname}`.`${newtagname}`
+	</update>
+	<update id="updateObject">
+	update `${dBname}`.`${tagname}`
+	<set>
+	<if test="regdata.time!=null">
+	time=#{regdata.time},
+	</if>
+	<if test="regdata.tagname!=null and regdata.tagname!=''">
+	tagname=#{regdata.tagname},
+	</if>
+	<if test="regdata.tagvalue!=null and regdata.tagvalue!=''">
+	tagvalue=#{regdata.tagvalue},
+	</if>
+	id=#{regdata.id}
+	</set>
+	</update>
+	<select id="findRegByDrid" resultType="com.photonstudio.pojo.Reg">
+		select * from `${dBname}`.reg where dr_id=#{drid} order by reg_ListShowLevel;
+	</select>
+	<select id="findsubinfo" resultType="com.photonstudio.pojo.Subinfo">
+		select * from `${dBname}`.subinfo;
+	</select>
+	<select id="findRegDataBYDate" resultType="com.photonstudio.pojo.Regdata">
+	select * from `${dBname}`.`${tableName}`
+	<where>
+	  tagname=#{tagName}
+	<if test="startTime!=null">
+	   and time &gt;= #{startTime}  
+	</if>
+	<if test="endTime!=null"> 
+	   and time &lt;= #{endTime} 
+	</if>
+	</where>
+	</select>
+	<select id="gettypeid1" resultType="com.photonstudio.pojo.Drtypeinfo">
+		select * from `${dBname}`.drtypeinfo where parentid=0 LIMIT 1
+	</select>
+	
+	<select id="gettypeid2" resultType="com.photonstudio.pojo.Drtypeinfo">
+		select * from `${dBname}`.drtypeinfo where parentid=#{drtypeid} LIMIT 1
+	</select>
+</mapper>

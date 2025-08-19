@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.ImagesMapper">
+	<!-- 插入图片信息 -->
+	<insert id="insertObjcet" >
+	insert into `${dBname}`.images  (imgid,imgname,imgtype,imgurl)
+ 	   values (#{images.imgid},#{images.imgname},#{images.imgtype},
+ 	  #{images.imgurl});
+ 	  </insert>
+
+	<insert id="insertObjcetP" >
+	insert into `${dBname}`.images_p  (imgid,imgname,imgtype,imgurl)
+ 	   values (#{images.imgid},#{images.imgname},#{images.imgtype},
+ 	  #{images.imgurl});
+ 	  </insert>
+	<!-- <update id="updateObject">
+    update `${dBname}`.images
+   <set>
+          <if test="images.imgname!=null and images.imgname!=''">
+            imgname=#{images.imgname},
+          </if>
+          <if test="images.imgurl!=null and images.imgurl!=''">
+             imgurl=#{images.imgurl},
+          </if>
+             imgtype=#{images.imgtype}
+       </set>
+       where imgid=#{images.imgid}
+    </update> -->
+	<!-- 查询总记录数 -->
+	<select id="getRowCount" resultType="int">
+		SELECT COUNT(*) FROM ${dBname}.images
+		<where>
+			1=1
+			<if test="imgtype!=null and imgtype!=''">
+				and imgtype =#{imgtype}
+			</if>
+			<if test="imgname!=null and imgname!=''">
+				and imgname like concat("%",#{imgname},"%")
+			</if>
+		</where>
+	</select>
+	<select id="getRowCountP" resultType="int">
+		SELECT COUNT(*) FROM ${dBname}.images_p
+		<where>
+			<if test="imgtype!=null and imgtype!=''">
+				imgtype =#{imgtype}
+			</if>
+		</where>
+	</select>
+	<select id="findObjectByType" resultType="com.photonstudio.pojo.Images">
+		select * from `${dBname}`.images
+		<where>
+			1=1
+			<if test="imgtype!=null and imgtype!=''">
+				and imgtype=#{imgtype}
+			</if>
+			<if test="imgname!=null and imgname!=''">
+				and imgname like concat("%",#{imgname},"%")
+			</if>
+		</where>
+		<if test="pageSize!=null and pageSize!=''">
+			limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+
+	<select id="findObjectPByType" resultType="com.photonstudio.pojo.Images">
+		select * from `${dBname}`.images_p
+		<where>
+			<if test="imgtype!=null and imgtype!=''">
+				imgtype=#{imgtype}
+			</if>
+		</where>
+		<if test="pageSize!=null and pageSize!=''">
+			limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+
+	<delete id="deleteObjectById">
+		delete from `${dBname}`.images
+		<where>
+			imgid=#{imgid}
+		</where>
+	</delete>
+	<delete id="deleteObjectPById">
+		delete from `${dBname}`.images_p
+		<where>
+			imgid=#{imgid}
+		</where>
+	</delete>
+	<select id="findObjectById" resultType="com.photonstudio.pojo.Images">
+		select * from `${dBname}`.images
+		<where>
+			imgid=#{imgid}
+		</where>
+	</select>
+	<select id="findObjectPById" resultType="com.photonstudio.pojo.Images">
+		select * from `${dBname}`.images_p
+		<where>
+			imgid=#{imgid}
+		</where>
+	</select>
+	<update id="updateObject">
+		update `${dBname}`.images
+		<set>
+			<if test="images.imgtype!=null and images.imgtype!=''">
+				imgtype=#{images.imgtype},
+			</if>
+			<if test="images.imgurl!=null and images.imgurl!=''">
+				imgurl=#{images.imgurl},
+			</if>
+			imgname=#{images.imgname}
+		</set>
+		where imgid=#{images.imgid}
+	</update>
+
+	<update id="updateObjectP">
+		update `${dBname}`.images_p
+		<set>
+			<if test="images.imgtype!=null and images.imgtype!=''">
+				imgtype=#{images.imgtype},
+			</if>
+			<if test="images.imgurl!=null and images.imgurl!=''">
+				imgurl=#{images.imgurl},
+			</if>
+			imgname=#{images.imgname}
+		</set>
+		where imgid=#{images.imgid}
+	</update>
+
+</mapper>

@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.RegMapper">
+<select id="findObject" resultType="com.photonstudio.pojo.Reg">
+	select e.*,f.drtypename from (SELECT a.*,b.drtypeid,b.drname,c.alarmtypelevel,d.tagvalue as newtagvalue FROM `${dBname}`.reg a 
+	left join `${dBname}`.drinfo b on a.dr_Id=b.drid
+	left join `${dBname}`.qstag d on a.tag_name=d.tagname  
+	left join `${dBname}`.alarmtype c on a.alarm_level=c.id)e left join `${dBname}`.drtypeinfo f on e.drtypeid = f.drtypeid   
+	<where>
+	1=1
+	<if test="drId!=null">
+	and	e.dr_Id=#{drId}
+	</if>
+	</where>
+	<if test="drId!=null">
+	ORDER BY reg_ListShowLevel + 0
+	</if>
+	<if test="drId==null">
+	ORDER BY e.reg_id
+	</if>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	
+	</if>
+</select>
+	<select id="findRegValueByDrId" resultType="com.photonstudio.common.vo.RegSub">
+		select a.* , b.tagvalue as newtagvalue  from reg a
+		left join qstag b on b.tagname=a.tag_name
+	<where>
+		a.dr_Id=#{drId}
+	</where>
+		ORDER BY reg_ListShowLevel +0
+	</select>
+	<select id="findRegValueBydrids" resultType="Reg">
+		select a.* , b.tagvalue as newtagvalue  from reg a
+		left join qstag b on b.tagname=a.tag_name
+		<where>
+			a.reg_DrShowType in ('1','2','3')
+			and
+			a.dr_Id  in <foreach collection="drIdList" open="("
+								  close=")"
+								  separator=","
+								  item="id">
+			#{id}
+		</foreach>
+		</where>
+	</select>
+	<select id="findImageRegSub" resultType="com.photonstudio.common.vo.RegSub">
+		select a.* , b.tagvalue as newtagvalue  from `${dBname}`.reg a
+		left join `${dBname}`.qstag b on b.tagname=a.tag_name
+		<where>
+			a.reg_id  in <foreach collection="regIds" open="("
+								close=")"
+								separator=","
+								item="id">
+			#{id}
+		</foreach>
+		</where>
+	</select>
+<select id="selectListForExcelExport" resultType="Reg">
+select * from `${dBname}`.reg
+	<where>
+	1=1
+	<if test="drtypeid!=null">
+	and dr_Id in (select drid from `${dBname}`.drinfo where drtypeid=#{drtypeid})
+	</if>
+</where>
+	limit #{startIndex},10000
+</select>
+<select id="getExportRowCount" resultType="int">
+select count(*) from `${dBname}`.reg
+	<where>
+	1=1
+	<if test="drtypeid!=null">
+	and dr_Id in (select drid from `${dBname}`.drinfo where drtypeid=#{drtypeid})
+	</if>
+	</where>
+</select>
+<select id="findAllByDrtypeid" resultType="Reg">
+select * from `${dBname}`.reg 
+<where>
+	dr_Id in (select drid from `${dBname}`.drinfo where drtypeid=#{drtypeid})
+</where>
+</select>
+<select id="findShowTypeAllByDrtypeid" resultType="Reg">
+	select a.*,b.tagvalue as qstagvalue from `${dBname}`.reg a left join `${dBname}`.qstag b on b.tagname=a.tag_name
+	<where>
+	<!-- dr_Id in (select drid from `${dBname}`.drinfo where  drtypeid=#{drtypeid})
+	and -->  a.reg_DrShowType in ('1','2','3') 
+</where>
+</select>
+	<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.reg
+  <where>
+		<if test="drId!=null">
+		dr_Id=#{drId}
+	   </if>
+		</where>
+</select>
+<!--<select id="findRegByid" resultType="Reg">
+	select * from `${dBname}`.reg
+	<where>
+	reg_id=#{regId}
+	</where>
+</select>-->
+<select id="getCountByRegDrShowType" resultType="int">
+	select COUNT(*) from (select DISTINCT dr_id from `${dBname}`.reg where 
+	reg_DrShowType=#{regDrShowType} and tag_alarm_state=#{tagAlarmState} and dr_Id in 
+	(select drid from `${dBname}`.drinfo where drtypeid in <foreach collection="childidlist" open="("
+                close=")"
+                separator=","
+                item="childid">
+                 #{childid}
+         </foreach> )) as a;
+	
+</select>
+<select id="getCountByShowTypeAndState" resultType="int">
+	select COUNT(*) from  `${dBname}`.reg where 
+	reg_DrShowType=#{showType} and tag_alarm_state=#{state} 
+</select>
+<select id="findRegByShowType" resultType="Reg">
+select * from `${dBname}`.reg 
+<where>
+reg_DrShowType =#{regDrShowType}
+</where>
+</select>
+<select id="findQstagByName" resultType="string">
+select tagvalue from `${dBname}`.qstag 
+<where>
+tagname =#{tagname}
+</where>
+</select>
+<select id="findTagnameByDrid" resultType="string">
+ SELECT tag_name  FROM `${dBname}`.reg
+ <where>
+ dr_Id=#{drid}
+ </where>
+</select>
+<select id="findRegByType" resultType="Reg">
+select * from `${dBname}`.reg
+<where>
+dr_Id=#{drid} and reg_DrShowType=#{regDrShowType}
+</where>
+</select>
+<select id="findRegIdByDrids" resultType="int">
+select * from `${dBname}`.reg 
+<where>
+dr_Id in <foreach collection="drids" open="("
+                close=")"
+                separator=","
+                item="drid">
+                #{drid}
+         </foreach>
+</where>
+</select>
+<insert id="insertObjectByDrtypemodes">
+insert into `${dBname}`.reg (reg_Name,dr_Id,reg_Type,reg_Units,reg_ReadWrite,
+	reg_ListShowLevel,reg_sub,reg_DrShowType,reg_drsub,tag_value,Ishistory,Isenergy,Isalarm,
+	alarmtype,value_min,value_max,and_or,alarm_level,tag_time) values 
+	 <foreach collection="drtypemodes" item="drtypemode" separator=",">
+	 (#{drtypemode.regName},#{drid},#{drtypemode.regType},#{drtypemode.regUnits},
+	 #{drtypemode.regReadWrite},#{drtypemode.regListShowLevel},#{drtypemode.regSub},
+	 #{drtypemode.regDrShowType},#{drtypemode.regDrsub},
+	 #{drtypemode.tagValue},#{drtypemode.ishistory},#{drtypemode.isenergy},
+	 #{drtypemode.isalarm},#{drtypemode.alarmtype},#{drtypemode.valueMin},
+	 #{drtypemode.valueMax},#{drtypemode.andOr},#{drtypemode.alarmLevel},
+	 #{drtypemode.tagTime})
+	 </foreach>
+
+</insert>
+<insert id="insertObject">
+	insert into `${dBname}`.reg  (reg_Name,dr_Id,reg_Type,reg_Units,reg_ReadWrite,
+	reg_ListShowLevel,reg_sub,reg_DrShowType,reg_drsub,tag_name,tag_value,Ishistory,Isenergy,Isalarm,
+	alarmtype,value_min,value_max,and_or,alarm_level,tag_alarm_state,tag_time,regmath,regcolor,islistshow)
+ 	   values (#{reg.regName},#{reg.drId}, #{reg.regType},
+ 	   #{reg.regUnits},#{reg.regReadWrite},#{reg.regListShowLevel},
+ 	   #{reg.regSub},#{reg.regDrShowType},#{reg.regDrsub},
+ 	   #{reg.tagName},#{reg.tagValue},#{reg.ishistory},
+ 	   #{reg.isenergy},#{reg.isalarm},#{reg.alarmtype},
+ 	   #{reg.valueMin},#{reg.valueMax},#{reg.andOr},#{reg.alarmLevel},#{reg.tagAlarmState},#{reg.tagTime},#{reg.regmath},#{reg.regcolor},#{reg.islistshow});
+	<selectKey resultType="int" keyProperty="reg.regId" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+</insert>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.reg 
+	<where>
+ 		reg_id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+</delete>
+<delete id="deleteObjectByDrids">
+delete from `${dBname}`.reg 
+	<where>
+dr_Id in 
+ 		<foreach collection="drids" open="("
+                close=")"
+                separator=","
+                item="drid">
+                #{drid}
+         </foreach>
+</where>
+</delete>
+<update id="updateObject">
+ 	update `${dBname}`.reg 
+ 	<set>
+                  reg_Type=#{reg.regType},
+                reg_Units=#{reg.regUnits},
+                reg_ReadWrite=#{reg.regReadWrite},
+                reg_ListShowLevel=#{reg.regListShowLevel},
+                reg_sub=#{reg.regSub},
+                reg_DrShowType=#{reg.regDrShowType},
+                reg_drsub=#{reg.regDrsub},
+                tag_name=#{reg.tagName},
+                tag_value=#{reg.tagValue},
+                Ishistory=#{reg.ishistory},
+                Isenergy=#{reg.isenergy},
+                Isalarm=#{reg.isalarm},
+                alarmtype=#{reg.alarmtype},
+                value_min=#{reg.valueMin},
+                value_max=#{reg.valueMax},
+                and_or=#{reg.andOr},
+                alarm_level=#{reg.alarmLevel},
+                tag_alarm_state=#{reg.tagAlarmState},
+                tag_time=#{reg.tagTime},
+                regmath=#{reg.regmath},
+                reg_Name=#{reg.regName},
+                regcolor=#{reg.regcolor},
+				islistshow=#{reg.islistshow}
+          </set>
+          where reg_id=#{reg.regId} 
+ </update>
+ <select id="findRegById" resultType="Reg">
+	 select a.* , b.tagvalue as newtagvalue  from `${dBname}`.reg a
+	 left join `${dBname}`.qstag b on b.tagname=a.tag_name
+ <where>
+ reg_id  in <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+ #{id}
+         </foreach>
+ </where>
+ </select>
+ <select id="findRegByListShowLevel" resultType="Reg">
+ SELECT * FROM `${dBname}`.reg 
+ <where>
+ dr_Id=#{drid} and reg_ListShowLevel in
+ <foreach collection="regListShowLevels" open="("
+                close=")"
+                separator=","
+                item="regListShowLevel">
+ #{regListShowLevel}
+         </foreach>
+ </where>
+ </select>
+
+	<select id="findRegByDrid" resultType="com.photonstudio.pojo.Reg">
+	SELECT a.*,b.drname,c.drtypename FROM `${dBname}`.reg a 
+	left join `${dBname}`.drinfo b on a.dr_Id=b.drid 
+	left join `${dBname}`.drtypeinfo c on b.drtypeid=c.drtypeid
+	<where>
+	1=1
+	<if test="drid!=null">
+	and	a.dr_Id=#{drid}
+	</if>
+	<if test="isenergy!=null and isenergy!=''">
+	and a.Isenergy=#{isenergy}
+	and a.tag_name is not null and a.tag_name !=''
+	</if>
+	</where>
+	
+	</select>
+	<select id="findQstag" resultType="com.photonstudio.pojo.Qstag">
+	SELECT * FROM `${dBname}`.qstag
+	</select>
+	<select id="findObjectById" resultType="int">
+	SELECT COUNT(*) FROM `${dBname}`.reg
+	<where>
+		reg_id=#{reg_id}
+	</where>
+	</select>
+	<update id="updateQstagByName">
+	update `${dBname}`.qstag 
+	<set>
+	<if test="tagTime!=null and tagTime!=''">
+	savetime=#{tagTime}
+	</if>
+	</set>
+	<where>
+	tagname=#{tagName}
+	</where>
+	</update>
+	<select id="queryTagValue" resultType="String">
+ 		SELECT tagvalue FROM `${dBname}`.qstag where tagname = #{tagName} 
+ 	</select>
+ 	<update id="updateRegValue">
+ 		update `${dBname}`.reg
+ 		<set> 
+ 			tag_value=#{tagvaule}
+ 		</set>
+ 		where reg_id=#{regId} 
+ 	</update>
+ 	
+ 	<select id="getRowCountByRegName" resultType="int">
+ 		select count(*) from `${dBname}`.reg 
+ 		<where>
+ 			1=1
+ 			<if test="regName !=null and regName!=''">
+ 				and reg_Name like CONCAT(CONCAT('%', #{regName}), '%')
+ 			</if>
+ 			<if test="rw !=null and rw!=''">
+ 				and reg_ReadWrite in ('2','3')
+ 			</if>
+ 		</where>
+ 	</select>
+ 	<select id="findRegByRegName" resultType="com.photonstudio.pojo.Reg">
+ 		select * from `${dBname}`.reg 
+ 		<where>
+ 			1=1
+ 			<if test="regName !=null and regName!=''">
+ 				and reg_Name like CONCAT(CONCAT('%', #{regName}), '%')
+ 			</if>
+ 			<if test="rw !=null and rw!=''">
+ 				and reg_ReadWrite in ('2','3')
+ 			</if>
+ 			limit #{startIndex},#{pageSize}
+ 		</where>
+ 	</select>
+ 	<select id="getRowCountByRW" resultType="int">
+ 		select count(*) from `${dBname}`.reg where reg_ReadWrite in ('2','3')
+ 	</select>
+ 	<select id="findRegByRW" resultType="com.photonstudio.pojo.Reg">
+ 		select * from `${dBname}`.reg where reg_ReadWrite in ('2','3') limit #{startIndex},#{pageSize}
+ 	</select>
+
+	<select id="findRegBydrid" resultType="Reg">
+		SELECT * FROM `${dBname}`.reg
+		<where>
+			dr_id  in <foreach collection="ids" open="("
+								close=")"
+								separator=","
+								item="id">
+			#{id}
+		</foreach>
+		</where>
+	</select>
+	<select id="findRegByNameDrids" resultType="Reg">
+		SELECT * FROM `${dBname}`.reg
+		<where>
+		    1=1 and
+			dr_id  in <foreach collection="drIds" open="("
+							   close=")"
+							   separator=","
+							   item="id">
+			#{id}
+		</foreach>
+		<if test="regName !=null and regName!=''">
+			and reg_Name like CONCAT(CONCAT('%', #{regName}), '%')
+		</if>
+		</where>
+	</select>
+</mapper>

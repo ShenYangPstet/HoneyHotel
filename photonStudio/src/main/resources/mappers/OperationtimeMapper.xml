@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.OperationtimeMapper">
+<select id="findObject" resultType="Operationtime">
+	select a.* ,b.drname,c.username from `${dBname}`.operationtime a
+	left join `${dBname}`.drinfo b on a.drid=b.drid
+	left join `zsqy_v2`.appsysuser c on a.user_id=c.id
+	<where>
+	<if test="drid!=null and drid!=''">
+	a.drid=#{drid}
+	</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+</select>
+<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.operationtime 
+	<where>
+	<if test="drid!=null and drid!=''">
+	drid=#{drid}
+	</if>
+	</where>
+</select>
+<insert id="insertObject">
+	insert into `${dBname}`.operationtime (drid,drtime,user_id,status,`explain`) values
+	(#{operationtime.drid},#{operationtime.drtime},
+	#{operationtime.userId},#{operationtime.status},#{operationtime.explain})
+</insert>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.operationtime 
+	<where>
+	id in 
+		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+</delete>
+<update id="updateObject">
+	update `${dBname}`.operationtime 
+	<set>
+	<if test="operationtime.drid!=null and operationtime.drid!=''">
+		drid=#{operationtime.drid},
+	</if>
+	<if test="operationtime.drtime!=null">
+		drtime=#{operationtime.drtime},
+	</if>
+	<if test="operationtime.explain!=null and operationtime.explain!=''">
+		`explain`=#{operationtime.explain},
+	</if>
+	<if test="operationtime.status!=null">
+		status=#{operationtime.status},
+	</if>
+	<if test="operationtime.userId!=null">
+		user_id=#{operationtime.userId},
+	</if>
+	id=#{operationtime.id}
+	</set>
+	<where>
+	id=#{operationtime.id}
+	</where>
+</update>
+</mapper>

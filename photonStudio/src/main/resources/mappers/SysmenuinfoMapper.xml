@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.SysmenuinfoMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Sysmenuinfo">
+	select * from `${dBname}`.sysmenuinfo 
+	<where>
+		<if test="parentId!=null">
+		parentId=#{parentId}
+		</if>
+	</where>
+	</select>
+	<select id="findPicByMenuId" resultType="com.photonstudio.pojo.Sysmenuinfo">
+	select a.*,b.picmodeid from `${dBname}`.sysmenuinfo a,`${dBname}`.pic b where a.picid = b.picid and a.id=#{id}
+	</select>
+	<select id="findObjectByGroupid" resultType="Sysmenuinfo">
+	select * from `${dBname}`.sysmenuinfo
+	<where>
+	FIND_IN_SET (id,(select qx from `${dBname}`.usergroup where id=#{groupid}))
+	<if test="parentId!=null">
+	and parentId=#{parentId}
+	</if>
+	</where>
+	</select>
+	<select id="findMenuIdByGroupid" resultType="int">
+	select a.id from `${dBname}`.sysmenuinfo a
+	<where>
+	FIND_IN_SET (id,(select qx from `${dBname}`.usergroup where id=#{groupid}))
+	</where>
+	</select>
+	<delete id="deleteAll">
+		delete from `${dBname}`.sysmenuinfo
+	</delete>
+	<insert id="insetAll">
+	
+		insert into `${dBname}`.sysmenuinfo (id,menuName,parentId,menuPath,menuLevel,
+		picid,isshow,menuindex) values 
+		<foreach collection="list" item="sysmenuinfo" separator="," >
+		(#{sysmenuinfo.id},#{sysmenuinfo.menuName},#{sysmenuinfo.parentId},
+		#{sysmenuinfo.menuPath},#{sysmenuinfo.menuLevel},#{sysmenuinfo.picid},
+		#{sysmenuinfo.isshow},#{sysmenuinfo.menuindex})
+		</foreach>
+	</insert>
+	<update id="updateObject">
+		update `${dBname}`.sysmenuinfo 
+		<set>
+		
+		<if test="sysmenuinfo.parentId!=null">
+		parentId=#{sysmenuinfo.parentId},	
+		</if>
+		<if test="sysmenuinfo.menuPath!=null and sysmenuinfo.menuPath!=''">
+		menuPath=#{sysmenuinfo.menuPath},	
+		</if>
+		<if test="sysmenuinfo.menuLevel!=null and sysmenuinfo.menuLevel!=''">
+		menuLevel=#{sysmenuinfo.menuLevel},	
+		</if>
+		
+		picid=#{sysmenuinfo.picid},	
+		
+		<if test="sysmenuinfo.isshow!=null and sysmenuinfo.isshow!=''">
+		isshow=#{sysmenuinfo.isshow},	
+		</if>
+		<if test="sysmenuinfo.menuindex!=null and sysmenuinfo.menuindex!=''">
+		menuindex=#{sysmenuinfo.menuindex},	
+		</if>
+		<if test="sysmenuinfo.menuName!=null and sysmenuinfo.menuName!=''">
+		menuName=#{sysmenuinfo.menuName},
+		</if>
+		id=#{sysmenuinfo.id}
+		</set>
+	<where>
+		id=#{sysmenuinfo.id}
+	</where>
+	</update>
+</mapper>

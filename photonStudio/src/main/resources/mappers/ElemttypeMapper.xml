@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.ElemttypeMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Elemttype">
+		select a.*,b.imgurl from `${dBname}`.elemttype a left join `${dBname}`.images b 
+		 on a.imgid = b.imgid
+		<where>
+		<if test="elemttypeid!=null and elemttypeid!=''">
+		a.elemttypeid=#{elemttypeid}
+		</if>
+		</where>
+		<if test="pageSize!=null and pageSize!=''">
+          limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.elemttype
+    </select>
+	<insert id="insertObject">
+		insert into ${dBname}.elemttype  (elemttypeid,elemttypename,typeid,imgid)
+ 	   values (#{elemttype.elemttypeid},#{elemttype.elemttypename},#{elemttype.typeid},#{elemttype.imgid});
+	</insert>
+	<delete id="deleteObjectById">
+		delete from `${dBname}`.elemttype
+		<where>
+			elemttypeid in 
+			<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+			</foreach>
+		</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.elemttype 
+	<set>
+		elemttypename=#{elemttype.elemttypename},
+		typeid=#{elemttype.typeid},
+		imgid=#{elemttype.imgid}
+	</set>
+	<where>
+		elemttypeid=#{elemttype.elemttypeid}
+	</where>
+	</update>
+	<select id="findObjectByTypeid" resultType="com.photonstudio.pojo.Elemttype">
+		select a.*,b.imgurl from `${dBname}`.elemttype a left join `${dBname}`.images b 
+		 on a.imgid = b.imgid where a.typeid=#{typeid}
+	</select>
+	<select id="findObjectById" resultType="com.photonstudio.pojo.Elemttype">
+		select * from `${dBname}`.elemttype where elemttypeid=#{elemttypeid}
+	</select>
+</mapper>

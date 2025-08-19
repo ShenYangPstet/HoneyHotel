@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.EnergyinfoMapper">
+	<select id="findObject" resultType="Energyinfo">
+	select * from `${dBname}`.energyinfo 
+	<if test="pageSize!=null and pageSize!=''">
+          limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="findApptotalCount" resultType="int">
+	select count(*) from `${dBname}`.energyinfo 
+	<where>
+		isapptotal=1
+	</where>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.energyinfo
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.energyinfo (energytypeid,energytypename,
+	energytypeExplain,tagnames,isapptotal,company) values (#{energyinfo.energytypeid},
+	#{energyinfo.energytypename},#{energyinfo.energytypeExplain},
+	#{energyinfo.tagnames},#{energyinfo.isapptotal},#{energyinfo.company})
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.energyinfo 
+	<where>
+	id in
+	<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+			</foreach>
+	</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.energyinfo 
+	<set>
+	<if test="energyinfo.energytypeid!=null">
+	energytypeid=#{energyinfo.energytypeid},
+	</if>
+	<if test="energyinfo.energytypename!=null and energyinfo.energytypename!=''">
+	energytypename=#{energyinfo.energytypename},
+	</if>
+	<if test="energyinfo.energytypeExplain!=null and energyinfo.energytypeExplain!=''">
+	energytypeExplain=#{energyinfo.energytypeExplain},
+	</if>
+	<if test="energyinfo.tagnames!=null and energyinfo.tagnames!=''">
+	tagnames=#{energyinfo.tagnames},
+	</if>
+	    <if test="energyinfo.company!=null and energyinfo.company!=''">
+	company=#{energyinfo.company},
+			</if>
+	<if test="energyinfo.isapptotal!=null">
+	isapptotal=#{energyinfo.isapptotal},
+	</if>
+	id=#{energyinfo.id}
+	</set>
+	<where>
+	id=#{energyinfo.id}
+	</where>
+	</update>
+	<select id="findAllEnergyinfo" resultType="Energyinfo">
+	select * from `${dBname}`.energyinfo where energytypeid=3
+	</select>
+	<select id="findEnergyinfoByid" resultType="Energyinfo">
+	select * from `${dBname}`.energyinfo where id=#{id}
+	</select>
+</mapper>

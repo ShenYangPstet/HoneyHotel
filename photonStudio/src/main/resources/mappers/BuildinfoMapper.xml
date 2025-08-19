@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.BuildinfoMapper">
+<select id="findObjectByName" resultType="com.photonstudio.pojo.Buildinfo">
+ select * from `${appname}`.buildinfo 
+ <where>
+		<if test="buildname!=null and buildname!=''">
+		 buildname like concat("%",#{buildname},"%")
+		</if>
+		</where>
+          limit #{startIndex},#{pageSize}
+</select>
+<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM ${dBname}.buildinfo
+  <where>
+		<if test="buildname!=null and buildname!=''">
+		 buildname like concat("%",#{buildname},"%")
+		</if>
+		</where>
+</select>
+ <insert id="insertObject">
+ 	 insert into `${dBname}`.buildinfo  (buildid,buildname,buildExplain,appid,appname)
+ 	   values (#{buildinfo.buildid},#{buildinfo.buildname},#{buildinfo.buildExplain},
+ 	  #{buildinfo.appid},#{buildinfo.appname});
+ </insert>
+ <delete id="deleteObjectById">
+ 	
+	delete from `${dBname}`.buildinfo 
+	<where>
+ 		buildid in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+ </delete>
+ <update id="updateObject">
+ 	update `${dBname}`.buildinfo 
+ 	<set>
+             <if test="buildinfo.buildname!=null and buildinfo.buildname!=''">
+               buildname=#{buildinfo.buildname},
+             </if>
+             <if test="buildinfo.buildExplain!=null and buildinfo.buildExplain!=''">
+                  buildExplain=#{buildinfo.buildExplain},
+             </if>
+             <if test="buildinfo.appid!=null and buildinfo.appid!=''">
+                appid=#{buildinfo.appid},
+             </if>
+                appname=#{buildinfo.appname}
+          </set>
+          where buildid=#{buildinfo.buildid} 
+ </update>
+ <select id="findAll" resultType="com.photonstudio.pojo.Buildinfo">
+ 		select * from `${dBname}`.buildinfo
+ 	</select>
+	<select id="findById" resultType="string">
+	select buildname from `${dBname}`.buildinfo 
+	<where>
+		buildid=#{buildid}
+	</where>
+	</select>
+	<select id="findObjectByBuildid" resultType="int">
+	select count(*) from `${dBname}`.buildinfo 
+	<where>
+		buildid=#{buildid}
+	</where>
+	</select>
+</mapper>

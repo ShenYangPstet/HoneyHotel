@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AppusergroupMapper">
+<select id="findObject" resultType="Appusergroup">
+	SELECT a.*,b.username,c.appName,c.ipaddr,c.appport,c.appexplain,c.region,c.city,c.longitude,c.latitude,c.appIntroduction,  d.apptypename FROM zsqy_v2.appusergroup a
+	LEFT JOIN zsqy_v2.appsysuser b ON a.userid=b.id
+	LEFT JOIN zsqy_v2.appmanager c ON a.appid =c.appid LEFT JOIN zsqy_v2.apptype d on c.apptypeid = d.id
+	<where>
+	1=1
+	<if test="userid!=null and userid!=''">
+	and a.userid=#{userid}
+	</if>
+	<if test="region!=null and region!=''">
+	and c.region=#{region}
+	</if>
+	<if test="city!=null and city!=''">
+	and c.city=#{city}
+	</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+</select>
+<select id="getRowCount" resultType="int">
+	SELECT COUNT(*) FROM zsqy_v2.appusergroup
+	<where>
+	<if test="userid!=null and userid!=''">
+	userid=#{userid}
+	</if>
+	</where>
+</select>
+<select id="findObjectByUserIds" resultType="Appusergroup">
+	SELECT a.*,b.username,c.appName,c.ipaddr,c.appport,c.appexplain,c.region,c.city,c.appIntroduction,  d.apptypename FROM zsqy_v2.appusergroup a
+	LEFT JOIN zsqy_v2.appsysuser b ON a.userid=b.id
+	LEFT JOIN zsqy_v2.appmanager c ON a.appid =c.appid LEFT JOIN zsqy_v2.apptype d on c.apptypeid = d.id
+	<where>
+	a.userid in <foreach collection="ids" open="(" close=")" separator="," item="id">
+		#{id}
+	</foreach>
+	</where>
+</select>
+<insert id="insertObject">
+	insert into zsqy_v2.appusergroup (userid,appid,appuserground,control,reg_show_level) values
+	(#{userid},#{appid},#{appuserground},#{control},#{regShowLevel})
+</insert>
+<delete id="deleteObjectById">
+	delete from zsqy_v2.appusergroup
+	<where>
+	id in <foreach collection="ids" open="(" close=")" separator="," item="id">
+		#{id}
+	</foreach>
+	</where>
+</delete>
+<update id="updateObject">
+	update zsqy_v2.appusergroup
+	<set>
+		<if test="userid!=null and userid!=''">
+		userid=#{userid},
+		</if>
+		<if test="appid!=null and appid!=''">
+		appid=#{appid},
+		</if>
+		<if test="appuserground!=null and appuserground!=''">
+		appuserground=#{appuserground},
+		</if>
+	    <if test="control!=null">
+			control=#{control},
+		</if>
+	    <if test="regShowLevel!=null">
+		reg_show_level=#{regShowLevel},
+		</if>
+		id=#{id}
+	</set>
+	<where>
+	
+		id=#{id} 
+	</where>
+</update>
+<update id="updateObjectByAppuser">
+	update zsqy_v2.appusergroup
+	<set>
+		appuserground=#{appuserground},
+	</set>
+	<where>
+		userid=#{userid} and appid=#{appid}
+	</where>
+</update>
+	<update id="updateSkinById">
+		update zsqy_v2.appusergroup
+		<set>
+			skin=#{skin},
+		</set>
+		<where>
+			id=#{id}
+		</where>
+	</update>
+</mapper>

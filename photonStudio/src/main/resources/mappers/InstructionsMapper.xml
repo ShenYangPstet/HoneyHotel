@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.InstructionsMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Instructions">
+	select a.* ,b.drtypename from `${dBname}`.instructions a left join 
+	`${dBname}`.drtypeinfo b on a.instructionsTypeid=b.drtypeid
+	<where>
+		<if test="instructionsTypeid!=null and instructionsTypeid!=''">
+		 a.instructionsTypeid=#{instructionsTypeid}
+		</if>
+		</where>
+		<if test="pageSize!=null and pageSize!=''">
+          limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="findObjectById" resultType="com.photonstudio.pojo.Instructions">
+	select * from `${dBname}`.instructions
+	<where>
+		id=#{id}
+	</where>
+	</select>
+	<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM ${dBname}.instructions
+    <where>
+    <if test="instructionsTypeid!=null and ainstructionsTypeid!=''">
+		 instructionsTypeid=#{instructionsTypeid}
+		</if>
+    </where>
+    </select>
+    <insert id="insertObject">
+    insert into ${dBname}.instructions  (id,instructionsName,instructionsTypeid,instructionsExplain,filepath)
+ 	   values (#{instructions.id},#{instructions.instructionsName},#{instructions.instructionsTypeid},
+ 	  #{instructions.instructionsExplain},#{instructions.filepath});
+    </insert>
+    <delete id="deleteObjectById">
+     delete from ${dBname}.instructions 
+     <where>
+     id=#{id}
+     </where>
+    </delete>
+    <update id="updateObject">
+    update `${dBname}`.instructions 
+ 	<set>
+ 		 <if test="instructions.instructionsName!=null and instructions.instructionsName!=''">
+               instructionsName=#{instructions.instructionsName},
+             </if>
+             <if test="instructions.instructionsTypeid!=null and instructions.instructionsTypeid!=''">
+               instructionsTypeid=#{instructions.instructionsTypeid},
+             </if>
+             <if test="instructions.filepath!=null and instructions.filepath!=''">
+ 			filepath=#{instructions.filepath},
+ 			</if>
+ 			instructionsExplain=#{instructions.instructionsExplain}
+ 	</set>
+ 	<where>
+ 			id=#{instructions.id}
+ 	</where> 
+    </update>
+    
+</mapper>

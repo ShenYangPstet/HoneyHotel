@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QueryAllenergyMapper">
+<select id="queryAllenergy" resultType="com.photonstudio.pojo.DataInfo">
+	select * from `${dBname}`.${tagname} order by time desc LIMIT 1
+</select>
+<select id="queryAllenergyByYMD" resultType="String">
+	select tagvalue from `${dBname}`.${tagname} where time=#{datestr}
+</select>
+<select id="queryAllenergyNew" resultType="com.photonstudio.pojo.DataInfo">
+	select * from `${dBname}`.${tabName} where tagname=#{tagname} order by time desc LIMIT 1
+</select>
+<select id="queryAllenergyByYMDNew" resultType="String">
+	select tagvalue from `${dBname}`.${tabName} where tagname=#{tagname} and time=#{dateStr}
+</select>
+<select id="queryRegEnergyByYMD" resultType="String">
+	select tagvalue from `${dBname}`.${dateTable} where tagname=#{tagname} and time=#{datestr}
+</select>
+<select id="queryAllenergyDay" resultType="com.photonstudio.pojo.DataInfo">
+	select * from `${dBname}`.${tagname} where time=#{strdate}
+</select>
+<select id="findOneEnergyInfo" resultType="com.photonstudio.pojo.DataInfo">
+	select a.id as id,a.time as time,a.tagname as tagname,a.tagvalue-b.tagvalue as tagvalue from (select * from `${dBname}`.${tagname} where time &gt;#{datestr1} and time &lt;#{datestr2} and RIGHT(time,5)='00:00' order by time asc) a,(select * from `${dBname}`.${tagname} where time &gt;#{datestr1} and time &lt;#{datestr2} and RIGHT(time,5)='00:00' order by time asc) b 
+	where date_sub(a.time,interval 1 hour) = b.time
+</select>
+<select id="findOneEnergyInfoNew" resultType="com.photonstudio.pojo.DataInfo">
+	select * from `${dBname}`.`${tableName}`
+	<where>
+	  tagname=#{tagname}
+	<if test="datestr1!=null">
+	   and time &gt;= #{datestr1}  
+	</if>
+	<if test="datestr2!=null"> 
+	   and time &lt;= #{datestr2} 
+	</if>
+	</where>
+	</select>
+<select id="queryAllenergyInfo" resultType="Energyinfo">
+	select * from `${dBname}`.energyinfo 
+	<where>
+		energytypeid=#{type}
+	</where>
+	</select>
+	<select id="findObjectById" resultType="Energyinfo">
+	select * from `${dBname}`.energyinfo 
+		<where>
+	id=#{id}
+		</where>
+	</select>
+	<select id="queryAppTotalenergyInfo" resultType="Energyinfo">
+		select * from `${dBname}`.energyinfo where energytypeid=#{energytypeid} and isapptotal=#{isapptotal}
+	</select>
+	<select id="findRegByTagname" resultType="Reg">
+	select * from `${dBname}`.reg where tag_name=#{tagname}
+	</select>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.ElemtmodleMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Elemtmodle">
+		select * from `${dBname}`.elemtmodle
+		<if test="pageSize!=null and pageSize!=''">
+          limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.elemtmodle
+    </select>
+	<insert id="insertObject">
+		insert into ${dBname}.elemtmodle  (modleId,modleName,modleLevel)
+ 	   values (#{elemtmodle.modleId},#{elemtmodle.modleName},#{elemtmodle.modleLevel});
+	</insert>
+	<delete id="deleteObjectById">
+		delete from `${dBname}`.elemtmodle
+		<where>
+			modleId in 
+			<foreach collection="ids" open="(" close=")" separator="," item="id">
+			#{id}
+			</foreach>
+		</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.elemtmodle 
+	<set>
+		modleName=#{elemtmodle.modleName},
+		modleLevel=#{elemtmodle.modleLevel}
+	</set>
+	<where>
+		modleId=#{elemtmodle.modleId}
+	</where>
+	</update>
+	<select id="findAll" resultType="com.photonstudio.pojo.Elemtmodle">
+		select * from `${dBname}`.elemtmodle order by modleLevel
+	</select>
+	<select id="findObjectByTypeid" resultType="com.photonstudio.pojo.Elemttype">
+		select a.*,b.imgurl from `${dBname}`.elemttype a left join `${dBname}`.images b 
+		 on a.imgid = b.imgid
+         <where>
+           1=1
+			 and a.typeid=#{typeid}
+            <if test="elemttypename!=null and elemttypename!=''">
+				and a.elemttypename like concat("%",#{elemttypename},"%")
+			</if>
+		 </where>
+	</select>
+	<select id="findElemttypemodeById" resultType="com.photonstudio.pojo.Elemttypemode">
+		select a.* , b.elemttypename ,c.imgurl,c.imgname from `${dBname}`.elemttypemode a left join 
+	 `${dBname}`.elemttype b on a.elemttypeid=b.elemttypeid left join `${dBname}`.images c
+	  on a.imgid=c.imgid
+		<where>
+			a.elemttypeid=#{elemttypeid}
+		</where>
+	</select>
+</mapper>

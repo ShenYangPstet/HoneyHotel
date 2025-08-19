@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AppsysuserMapper">
+
+    <select id="findAll" resultType="com.photonstudio.pojo.Appsysuser">
+
+        select *
+        from ${name}.appsysuser;
+    </select>
+    <select id="findUserByUp" resultType="com.photonstudio.pojo.Appsysuser">
+
+        select *
+        from zsqy_v2.appsysuser
+        where username = #{username}
+          and password = #{password}
+
+    </select>
+    <update id="updatePassword">
+        update zsqy_v2.appsysuser
+        <set>
+
+            password=#{newpassword}
+        </set>
+        where username=#{username}
+    </update>
+    <select id="findUserByPassword" resultType="int">
+        select count(*) from zsqy_v2.appsysuser
+        <where>
+            username=#{username} and password=#{password}
+        </where>
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(*) from zsqy_v2.appsysuser
+        <where>
+            username=#{username}
+        </where>
+    </select>
+    <delete id="deleteTokenByUsername">
+        delete from zsqy_v2.usertoken
+        <where>
+            username=#{username}
+        </where>
+
+    </delete>
+    <insert id="saveToken">
+
+        insert into zsqy_v2.usertoken (token, username, userid)
+        values (#{token}, #{username}, #{userid});
+
+    </insert>
+    <select id="findUsertokenByToken" resultType="com.photonstudio.pojo.Usertoken">
+
+        SELECT *
+        FROM zsqy_v2.usertoken
+        WHERE token = #{token};
+    </select>
+    <select id="findAppsysuserByUsername" resultType="com.photonstudio.pojo.Appsysuser">
+
+        SELECT *
+        FROM zsqy_v2.appsysuser
+        where username = #{username}
+
+    </select>
+    <select id="findUserByName" resultType="com.photonstudio.pojo.Appsysuser">
+        SELECT * FROM zsqy_v2.appsysuser
+        <where>
+            <if test="name!=null and name!=''">
+                username like concat("%",#{name},"%")
+            </if>
+        </where>
+        <if test="pageSize!=null and pageSize!=''">
+            limit #{startIndex},#{pageSize}
+        </if>
+    </select>
+    <select id="getRowCount" resultType="int">
+        SELECT COUNT(*) FROM zsqy_v2.appsysuser
+        <where>
+            <if test="name!=null and name!=''">
+                username like concat("%",#{name},"%")
+            </if>
+        </where>
+    </select>
+    <insert id="insertObject">
+        insert into zsqy_v2.appsysuser (id, username, password, phonenum, email, licensetype, licensetime, role,permission)
+        values (#{id}, #{username}, #{password}, #{phonenum}, #{email}, #{licensetype}, #{licensetime}, #{role},#{permission})
+    </insert>
+    <delete id="deleteObjectById">
+
+        delete from zsqy_v2.appsysuser
+        <where>
+            id in
+            <foreach collection="ids" open="("
+                     close=")"
+                     separator=","
+                     item="id">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+    <update id="updateObject">
+
+        update zsqy_v2.appsysuser
+        <set>
+            <if test="username!=null and username!=''">
+                username=#{username},
+            </if>
+            <if test="password!=null and password!=''">
+                password=#{password},
+            </if>
+            <if test="phonenum!=null and phonenum!=''">
+                phonenum=#{phonenum},
+            </if>
+            <if test="email!=null and email!=''">
+                email=#{email},
+            </if>
+            <if test="licensetype!=null and licensetype!=''">
+                licensetype=#{licensetype},
+            </if>
+            <if test="licensetime!=null">
+                licensetime=#{licensetime},
+            </if>
+            <if test="role!=null">
+                role=#{role},
+            </if>
+            <if test="permission!=null">
+                permission=#{permission},
+            </if>
+            <if test="skinColor!=null and skinColor!=''">
+                skin_color=#{skinColor},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="queryAppinfoByAppname" resultType="com.photonstudio.pojo.Appinfo">
+
+        select *
+        from `${dBname}`.appinfo
+        where appname = #{appName}
+    </select>
+
+    <select id="getUserId" resultType="Integer">
+        select @@IDENTITY
+    </select>
+</mapper>
+

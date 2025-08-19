@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.TaskEnergyMapper">
+
+	<select id="findAppManagerAll" resultType="com.photonstudio.pojo.Appmanager" >
+		select * from zsqy_v2.appmanager where appstate=1 and state=0;
+	</select>
+	<insert id="insertAppenergy" parameterType="com.photonstudio.pojo.Appenergy">
+	delete from zsqy_v2.appenergy where appid = #{appenergy.appid};
+	insert into zsqy_v2.appenergy (appid,appTotalEnergy,
+	oneDayTime,oneDayEnergy,twoDayTime,twoDayEnergy,threeDayTime,threeDayEnergy,
+	fourDayTime,fourDayEnergy,fiveDayTime,fiveDayEnergy,sixDayTime,sixDayEnergy,
+	sevenDayTime,sevenDayEnergy,totalEffEnergy,appDrCost,appPeopleCost,appCarbon,
+	appTree,appCost) values (#{appenergy.appid},#{appenergy.appTotalEnergy},#{appenergy.oneDayTime},
+	#{appenergy.oneDayEnergy},#{appenergy.twoDayTime},#{appenergy.twoDayEnergy},#{appenergy.threeDayTime},#{appenergy.threeDayEnergy},
+	#{appenergy.fourDayTime},#{appenergy.fourDayEnergy},#{appenergy.fiveDayTime},#{appenergy.fiveDayEnergy},#{appenergy.sixDayTime},
+	#{appenergy.sixDayEnergy},#{appenergy.sevenDayTime},#{appenergy.sevenDayEnergy},#{appenergy.totalEffEnergy},#{appenergy.appDrCost},
+	#{appenergy.appPeopleCost},#{appenergy.appCarbon},#{appenergy.appTree},#{appenergy.appCost})
+	</insert>
+	<select id="findEnergyparm" resultType="com.photonstudio.pojo.Energyparm" >
+		select * from `${dbname}`.energyparm limit 1;
+	</select>
+	<select id="queryAppenergyData" resultType="com.photonstudio.pojo.Appenergy" >
+		select * from zsqy_v2.appenergy
+		<where>
+		appid in
+			<foreach collection="appids" open="("
+	                close=")"
+	                separator=","
+	                item="appid">
+	                #{appid}
+	         </foreach>
+		</where>
+	</select>
+</mapper>
+

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.SpinfoMapper">
+<select id="findObject" resultType="com.photonstudio.pojo.Spinfo">
+	SELECT * FROM `${dBname}`.spinfo
+ <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+ </if>
+</select>
+<select id="findObjectById" resultType="int">
+SELECT COUNT(*) FROM `${dBname}`.spinfo
+<where>
+	id=#{id}
+</where>
+
+</select>
+<select id="findObjectByIds" resultType="Spinfo">
+SELECT * FROM `${dBname}`.spinfo
+<where>
+	id in 
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach>
+</where>
+</select>
+<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.spinfo
+	
+</select>
+<insert id="insertObject">
+insert into `${dBname}`.spinfo  (sp_id,sp_dll_path,sp_ip,sp_port,
+sp_camera,sp_user,sp_password,sp_ptztype,monitor)
+ 	   values (#{spinfo.spId},#{spinfo.spDllPath},
+ 	  #{spinfo.spIp},#{spinfo.spPort},#{spinfo.spCamera},#{spinfo.spUser},
+ 	  #{spinfo.spPassword},#{spinfo.spPtztype},#{spinfo.monitor});
+
+</insert>
+<delete id="deleteObjectById">
+delete from `${dBname}`.spinfo
+<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+</delete>
+<update id="updateObject">
+ update `${dBname}`.spinfo
+ <set>
+                sp_id=#{spinfo.spId},
+                sp_dll_path=#{spinfo.spDllPath},
+                sp_port=#{spinfo.spPort},
+                sp_camera=#{spinfo.spCamera},
+                sp_user=#{spinfo.spUser},
+                sp_password=#{spinfo.spPassword},
+                sp_ptztype=#{spinfo.spPtztype},
+                monitor=#{spinfo.monitor},
+             id=#{spinfo.id}
+          </set>
+          where id=#{spinfo.id} 
+	 
+
+</update>
+</mapper>

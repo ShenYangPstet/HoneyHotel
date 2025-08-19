@@ -1,0 +1,56 @@
+server:
+  port: 8090
+  servlet:
+    session:
+      timeout: 7200
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/javascript,text/css,application/javascript
+    min-response-size: 2048
+spring:
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      enabled: true #是否启用http上传处理
+      max-request-size: 100MB #最大请求文件的大小
+      max-file-size: 20MB #设置单个文件最大长度
+      file-size-threshold: 20MB #当文件达到多少时进行磁盘写入
+  quartz:
+    #相关属性配置
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: clusteredScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.simpl.RAMJobStore #job信息存储在内存
+            #class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            #driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            #tablePrefix: QRTZ_
+            #isClustered: true
+            #clusterCheckinInterval: 10000
+            #useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+    #数据库方式
+    #job-store-type: jdbc
+    #初始化表结构
+    #jdbc:
+      #initialize-schema: never
+  web:
+    resources:
+      add-mappings: true
+
+#mybatis-plush配置
+mybatis-plus:
+  type-aliases-package: com.photonstudio.pojo
+  mapper-locations: classpath:/mappers/*.xml
+  configuration:
+    map-underscore-to-camel-case: true  #自动开启驼峰规则映射
+

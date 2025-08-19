@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AppuserMapper">
+<select id="findObject" resultType="Appuser">
+  select a.* , b.departmentname ,c.usergroupname from `${dBname}`.appuser a left join
+  `${dBname}`.department b on a.departmentid=b.departmentid left join 
+  `${dBname}`.usergroup c on a.usergroupid =c.id
+   <where>
+		<if test="username!=null and username!=''">
+		 username like concat("%",#{username},"%")
+		</if>
+	</where> 
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+</select>
+<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.appuser 
+   <where>
+		<if test="username!=null and username!=''">
+		 username like concat("%",#{username},"%")
+		</if>
+	</where> 
+</select>
+<select id="findObjectByUserid" resultType="Appuser">
+	select * from   `${dBname}`.appuser
+	<where>
+	userid=#{userid}
+	</where>
+</select>
+<insert id="insertObject">
+	insert into `${dBname}`.appuser (userid,username,phonenum,email,usergroupid,departmentid,reg_show_level,
+	usertype,isJB,permission) values (#{appuser.userid},#{appuser.username},#{appuser.phonenum},#{appuser.email},#{appuser.usergroupid},
+	#{appuser.departmentid},#{appuser.regShowLevel},#{appuser.usertype},#{appuser.isJB},#{appuser.permission})
+</insert>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.appuser 
+	<where>
+	userid	in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+</delete>
+<update id="updateObject">
+	update `${dBname}`.appuser 
+	<set>
+	<if test="appuser.username!=null and appuser.username!=''">
+	username=#{appuser.username},
+	</if>
+	<if test="appuser.usergroupid!=null">
+	usergroupid=#{appuser.usergroupid},
+	</if>
+	<if test="appuser.departmentid!=null">
+	departmentid=#{appuser.departmentid},
+	</if>
+	<if test="appuser.regShowLevel!=null">
+			appuser.reg_show_level=#{appuser.regShowLevel},
+	</if>
+	<if test="appuser.usertype!=null">
+	usertype=#{appuser.usertype},
+	</if>
+	<if test="appuser.phonenum!=null and appuser.phonenum!=''">
+	phonenum=#{appuser.phonenum},
+	</if>
+	<if test="appuser.email!=null and appuser.email!=''">
+	email=#{appuser.email},
+	</if>
+
+	<if test="appuser.isJB!=null">
+	isJB=#{appuser.isJB},
+	</if>
+	<if test="appuser.permission!=null">
+		permission=#{appuser.permission},
+   </if>
+	userid=#{appuser.userid}
+	</set>
+	<where>
+	userid=#{appuser.userid}
+	</where>
+</update>
+</mapper>

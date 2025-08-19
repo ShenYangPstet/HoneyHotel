@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.DepartmentdrMapper">
+	<select id="findObject" resultType="Departmentdr">
+	select a.*,b.drname from `${dBname}`.departmentdr a left join
+	`${dBname}`.drinfo b on a.drid=b.drid 
+	<where>
+	a.departmentid=#{departmentid}
+	</where>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.departmentdr where departmentid=#{departmentid}
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.departmentdr  (departmentid,drid) values 
+	
+	<foreach collection="drids" 
+                separator=","
+                item="drid">
+			(#{departmentid},#{drid})
+                </foreach>
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.departmentdr 
+	<where>
+	id in
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach>
+	</where>
+	</delete>
+</mapper>

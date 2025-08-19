@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsAlarmlogMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.QsAlarmlog">
+	SELECT a.*,b.reg_Name,c.drname ,c.drid,d.alarmtypename,e.alarmexplain ,f.drtypename FROM `${dBname}`.qs_alarmlog a
+	LEFT JOIN `${dBname}`.reg b ON a.reg_id=b.reg_id
+	LEFT JOIN `${dBname}`.drinfo c ON b.dr_Id=c.drid
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+	left join `${dBname}`.regalarminfo e on a.reg_id=e.reg_id and a.alarm_level=e.alarm_level
+	left join `${dBname}`.drtypeinfo f on c.drtypeid=f.drtypeid
+		<where>
+	1=1
+	<if test="startTime!=null">
+	  and a.time &gt;= #{startTime}
+	</if>
+	<if test="endTime!=null">
+	  and a.time &lt;= #{endTime}
+	</if>
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and a.alarm_level=#{alarmtypelevel}
+	</if>
+	<if test="floorId!=null and floorId!=''">
+		and c.buildid=#{floorId}
+	</if>
+	<if test="alarmanswer!=null and alarmanswer!=''">
+	and a.alarmanswer=#{alarmanswer}
+	</if>
+	<if test="drtypeids!=null and drtypeids.size>0">
+	and c.drtypeid in <foreach collection="drtypeids"  index="index"
+							item="drtypeid" open="(" close=")" separator=",">
+		#{drtypeid}
+	</foreach>
+	</if>
+
+	<if test="drName!=null and drName!=''">
+	and c.drname like concat("%",#{drName},"%")
+	</if>
+	</where>
+	ORDER BY a.time DESC
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+	</select>
+	<select id="findObjectByHome" resultType="QsAlarmlog">
+	SELECT * FROM (
+	<foreach collection="dBlist" item="dB" separator="union all">
+	SELECT #{dB.value} as appexplain ,#{dB.name} as dBname,a.*,b.reg_Name,c.drname ,d.alarmtypename FROM `${dB.name}`.qs_alarmlog a
+	LEFT JOIN `${dB.name}`.reg b ON a.reg_id=b.reg_id
+	LEFT JOIN `${dB.name}`.drinfo c ON b.dr_Id=c.drid
+	left join `${dB.name}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+
+	</foreach>
+	) td
+	<where>
+	1=1
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and td.alarm_level=#{alarmtypelevel}
+	</if>
+	<if test="startTime!=null">
+	  and td.time &gt;= #{startTime}
+	</if>
+	<if test="endTime!=null">
+	  and td.time &lt;= #{endTime}
+	</if>
+	</where>
+	ORDER BY td.time DESC
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+	</select>
+	<select id="getRowCountByHome" resultType="int">
+	SELECT count(*) FROM (
+	<foreach collection="dBlist" item="dB" separator="union all" >
+	SELECT * FROM `${dB.name}`.qs_alarmlog
+	</foreach>
+	) a
+	<where>
+	1=1
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and  a.alarm_level=#{alarmtypelevel}
+	</if>
+
+	<if test="startTime!=null">
+	  and a.time &gt;= #{startTime}
+	</if>
+	<if test="endTime!=null">
+	  and a.time &lt;= #{endTime}
+	</if>
+	</where>
+	</select>
+	<select id="findObjectByDrid" resultType="com.photonstudio.pojo.QsAlarmlog">
+	SELECT a.*,b.reg_Name,c.drname ,d.alarmtypename FROM `${dBname}`.qs_alarmlog a
+	LEFT JOIN `${dBname}`.reg b ON a.reg_id=b.reg_id
+	LEFT JOIN `${dBname}`.drinfo c ON b.dr_Id=c.drid
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+	<where>
+	1=1
+	<if test="alarmstate!=null and alarmstate!=''">
+	 and a.alarmstate=#{alarmstate}
+	</if>
+	<if test="drid!=null and drid!=''">
+	and a.reg_id in (select reg_id from `${dBname}`.reg where dr_Id=#{drid})
+	</if>
+	<if test="startTime!=null">
+	  and a.time &gt;= #{startTime}
+	</if>
+	<if test="endTime!=null">
+	  and a.time &lt;= #{endTime}
+	</if>
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and b.alarm_level=#{alarmtypelevel}
+	</if>
+	<if test="alarmanswer!=null and alarmanswer!=''">
+	and a.alarmanswer=#{alarmanswer}
+	</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+	</select>
+	<select id="findEcharsHome" resultType="EcharsObject">
+	SELECT count(*) value,f.alarmtypename name FROM
+	(<foreach collection="dBlist" item="dBname" separator="union all">
+	SELECT a.*, d.alarmtypename FROM `${dBname}`.qs_alarmlog a
+	LEFT JOIN `${dBname}`.reg b ON a.reg_id=b.reg_id
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+	</foreach>) f
+	<where>
+	f.alarmstate=1
+	</where>
+	GROUP BY f.alarmtypename
+	</select>
+	<select id="findEchars" resultType="EcharsObject">
+	SELECT count(*) value,d.alarmtypename name FROM `${dBname}`.qs_alarmlog a
+	LEFT JOIN `${dBname}`.reg b ON a.reg_id=b.reg_id
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+	<where>
+	a.alarmstate=1
+	</where>
+	GROUP BY d.alarmtypename
+	</select>
+	<select id="findEcharsByYMD" resultType="int">
+	SELECT count(*)  FROM `${dBname}`.qs_alarmlog a
+	LEFT JOIN `${dBname}`.reg b ON a.reg_id=b.reg_id
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+	<where>
+	a.alarmstate=1 and b.alarm_level=#{alarmtypelevel} and time &gt; #{startTime}  and time &lt;= #{endTime}
+	</where>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.qs_alarmlog a
+	LEFT JOIN `${dBname}`.reg b ON a.reg_id=b.reg_id
+	LEFT JOIN `${dBname}`.drinfo c ON b.dr_Id=c.drid
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.alarmtypelevel
+	<where>
+		1=1
+	<if test="alarmstate!=null and alarmstate!=''">
+	 and a.alarmstate=#{alarmstate}
+	</if>
+	<if test="startTime!=null">
+	  and time &gt;= #{startTime}
+	</if>
+	<if test="endTime!=null">
+	  and time &lt;= #{endTime}
+	</if>
+		<if test="floorId!=null and floorId!=''">
+			and c.buildid=#{floorId}
+		</if>
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and a.alarm_level=#{alarmtypelevel}
+	</if>
+	<if test="alarmanswer!=null and alarmanswer!=''">
+	and a.alarmanswer=#{alarmanswer}
+	</if>
+	<if test="drtypeids!=null and drtypeids.size>0">
+	and c.drtypeid in <foreach collection="drtypeids"  index="index"
+							   item="drtypeid" open="(" close=")" separator=",">
+		#{drtypeid}
+	</foreach>
+	</if>
+    <if test="drName!=null and drName!=''">
+		and c.drname like concat("%",#{drName},"%")
+	</if>
+	</where>
+	</select>
+	<select id="findAlarmByHome" resultType="QsAlarmlog">
+	SELECT * FROM (
+	<foreach collection="dBlist" item="dB" separator="union all">
+	SELECT #{dB.value} as appexplain ,#{dB.name} as dBname,a.* ,c.reg_Name,d.drname ,e.alarmtypename FROM `${dB.name}`.qs_alarmlog a INNER JOIN
+	(select reg_id, max(time) time from `${dB.name}`.qs_alarmlog GROUP BY reg_id) b
+	ON a.reg_id=b.reg_id AND a.time =b.time INNER JOIN
+	(SELECT * FROM `${dB.name}`.reg WHERE reg.tag_alarm_state=1) c ON a.reg_id=c.reg_id
+	LEFT JOIN `${dB.name}`.drinfo d ON c.dr_Id=d.drid
+	left join `${dB.name}`.alarmtype e on a.alarm_level=e.alarmtypelevel
+	</foreach>)td ORDER BY td.time DESC
+	 <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+	</select>
+	<select id="findObjectByAlarm" resultType="com.photonstudio.pojo.QsAlarmlog">
+	SELECT a.* ,c.reg_Name,d.drid,d.drname ,e.alarmtypename,f.alarmexplain ,g.drtypename FROM `${dBname}`.qs_alarmlog a INNER JOIN
+	(select reg_id, max(time) time from `${dBname}`.qs_alarmlog GROUP BY reg_id) b
+	ON a.reg_id=b.reg_id AND a.time =b.time INNER JOIN
+	(SELECT * FROM `${dBname}`.reg WHERE reg.tag_alarm_state=1) c ON a.reg_id=c.reg_id
+	LEFT JOIN `${dBname}`.drinfo d ON c.dr_Id=d.drid
+	left join `${dBname}`.alarmtype e on a.alarm_level=e.alarmtypelevel
+	left join `${dBname}`.regalarminfo f on a.reg_id=f.reg_id and a.alarm_level=f.alarm_level
+	left join `${dBname}`.drtypeinfo g on d.drtypeid=g.drtypeid
+	<where>
+	1=1
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and c.alarm_level=#{alarmtypelevel}
+	</if>
+	<if test="alarmanswer!=null and alarmanswer!=''">
+	and a.alarmanswer=#{alarmanswer}
+	</if>
+	<if test="drtypeids!=null and drtypeids.size>0">
+	and d.drtypeid in <foreach collection="drtypeids"  index="index"
+							   item="drtypeid" open="(" close=")" separator=",">
+		#{drtypeid}
+	</foreach>
+	</if>
+	<if test="floorId!=null and floorId!=''">
+		and d.buildid=#{floorId}
+	</if>
+		<if test="drName!=null and drName!=''">
+			and d.drname like concat("%",#{drName},"%")
+		</if>
+	</where>
+    ORDER BY a.time DESC
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+    </if>
+	</select>
+	<select id="findEcharsByAlarm" resultType="EcharsObject">
+	SELECT COUNT(*) value,e.alarmtypename name FROM `${dBname}`.qs_alarmlog a INNER JOIN
+	(select reg_id, max(time) time from `${dBname}`.qs_alarmlog GROUP BY reg_id) b
+	ON a.reg_id=b.reg_id AND a.time =b.time INNER JOIN
+	(SELECT * FROM `${dBname}`.reg WHERE reg.tag_alarm_state=1) c ON a.reg_id=c.reg_id
+	left join `${dBname}`.alarmtype e on a.alarm_level=e.alarmtypelevel group by e.alarmtypename
+	</select>
+	<select id="getAlarmRowCountByHome" resultType="int">
+	SELECT count(*) FROM (
+	<foreach collection="dBlist" item="dB" separator="union all">
+	SELECT a.*  FROM `${dB.name}`.qs_alarmlog a INNER JOIN
+	(select reg_id, max(time) time from `${dB.name}`.qs_alarmlog GROUP BY reg_id) b
+	ON a.reg_id=b.reg_id AND a.time =b.time INNER JOIN
+	(SELECT * FROM `${dB.name}`.reg WHERE reg.tag_alarm_state=1) c ON a.reg_id=c.reg_id
+	</foreach>) a
+	</select>
+	<select id="getRowCountByAlarm" resultType="int">
+		SELECT count(*) FROM `${dBname}`.qs_alarmlog a INNER JOIN
+	(select reg_id, max(time) time from `${dBname}`.qs_alarmlog GROUP BY reg_id) b
+	ON a.reg_id=b.reg_id AND a.time =b.time INNER JOIN
+	(SELECT * FROM `${dBname}`.reg WHERE reg.tag_alarm_state=1) c ON a.reg_id=c.reg_id
+	LEFT JOIN `${dBname}`.drinfo d ON c.dr_Id=d.drid
+	<where>
+	1=1
+	<if test="alarmtypelevel!=null and alarmtypelevel!=''">
+	and c.alarm_level=#{alarmtypelevel}
+	</if>
+	<if test="alarmanswer!=null and alarmanswer!=''">
+	and a.alarmanswer=#{alarmanswer}
+	</if>
+	<if test="drtypeids!=null and drtypeids.size>0">
+	and d.drtypeid in <foreach collection="drtypeids"  index="index"
+										   item="drtypeid" open="(" close=")" separator=",">
+		#{drtypeid}
+	</foreach>
+	</if>
+    <if test="floorId !=null and floorId!=''">
+		and d.buildid=#{floorId}
+	</if>
+		<if test="drName!=null and drName!=''">
+			and d.drname like concat("%",#{drName},"%")
+		</if>
+	</where>
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.qs_alarmlog (time,reg_id,alarmvalue,alarmstate,
+	alarmanswer,alarmhandle,username,usertime) values (#{qsAlarmlog.time},
+	#{qsAlarmlog.regId},#{qsAlarmlog.alarmvalue},#{qsAlarmlog.alarmstate},
+	#{qsAlarmlog.alarmanswer},#{qsAlarmlog.alarmhandle},#{qsAlarmlog.username},
+	#{qsAlarmlog.usertime})
+	</insert>
+	<delete id="deleteObject">
+	delete from `${dBname}`.qs_alarmlog
+	<where>
+		id in
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach>
+	</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.qs_alarmlog
+	<set>
+	<if test="qsAlarmlog.time!=null">
+		time=#{qsAlarmlog.time},
+	</if>
+	<if test="qsAlarmlog.regId!=null and qsAlarmlog.regId!=''">
+		reg_id=#{qsAlarmlog.regId},
+	</if>
+	<if test="qsAlarmlog.alarmvalue!=null and qsAlarmlog.alarmvalue!=''">
+		alarmvalue=#{qsAlarmlog.alarmvalue},
+	</if>
+	<if test="qsAlarmlog.alarmstate!=null and qsAlarmlog.alarmstate!=''">
+		alarmstate=#{qsAlarmlog.alarmstate},
+	</if>
+	<if test="qsAlarmlog.alarmanswer!=null and qsAlarmlog.alarmanswer!=''">
+		alarmanswer=#{qsAlarmlog.alarmanswer},
+	</if>
+		alarmhandle=#{qsAlarmlog.alarmhandle},
+	<if test="qsAlarmlog.username!=null and qsAlarmlog.username!=''">
+		username=#{qsAlarmlog.username},
+	</if>
+		usertime=#{qsAlarmlog.usertime}
+	</set>
+	<where>
+		id=#{qsAlarmlog.id}
+	</where>
+	</update>
+	<select id="queryPicByDrid" resultType="com.photonstudio.pojo.Pic">
+		select * from `${dBname}`.pic where picid in (select DISTINCT picid from `${dBname}`.picedit where drid=#{drid})
+	</select>
+
+	<select id="EcharsCountList" resultType="com.photonstudio.pojo.QsAlarmlog">
+        select a.time,a.reg_id,a.alarmvalue,a.alarmstate,a.alarm_level
+        from qs_alarmlog a
+        LEFT JOIN reg b ON a.reg_id=b.reg_id
+        left join alarmtype d on a.alarm_level=d.alarmtypelevel
+        where a.alarmstate=1
+	</select>
+</mapper>

@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.photonstudio.mapper.QsMsMapper">
+    <select id="findMsRw" resultType="com.photonstudio.pojo.Qsmsrw">
+        select *
+        from `${dBname}`.qs_ms_rw
+        where drtypeid = #{drtypeid}
+    </select>
+    
+    <select id="findAllMsRw" resultType="com.photonstudio.pojo.Qsmsrw">
+        select a.*,b.drtypename 
+        from `${dBname}`.qs_ms_rw a,`${dBname}`.drtypeinfo b
+        where a.drtypeid = b.drtypeid;
+    </select>
+    
+    <update id="updateMsRw">
+        update `${dBname}`.qs_ms_rw
+        set msname=#{qsmsrw.msname},
+        	color=#{qsmsrw.color},
+        	type=#{qsmsrw.type}
+        where id = #{qsmsrw.id}
+    </update>
+    <insert id="insertMsRw">
+        insert into `${dBname}`.qs_ms_rw (drtypeid, msname,color,type)
+        values (#{qsmsrw.drtypeid}, #{qsmsrw.msname},#{qsmsrw.color},#{qsmsrw.type})
+    </insert>
+    <delete id="deleteMsRw">
+        delete
+        from `${dBname}`.qs_ms_rw
+        where id = #{id}
+    </delete>
+    
+    <select id="findRowByRwId" resultType="int">
+        select count(*)
+        from `${dBname}`.qs_ms_rw
+        where id = #{id}
+    </select>
+    
+    <select id="findMsDz" resultType="com.photonstudio.pojo.Qsmsdz">
+        select *
+        from `${dBname}`.qs_ms_dz
+        where rwid = #{rwid} limit #{startIndex},#{pageSize}
+    </select>
+    
+    <select id="findMsDzByRwid" resultType="com.photonstudio.pojo.Qsmsdz">
+        select *
+        from `${dBname}`.qs_ms_dz
+        where rwid = #{rwid}
+    </select>
+    
+    <select id="getCount" resultType="int">
+        select count(*)
+        from `${dBname}`.qs_ms_dz
+        where rwid = #{rwid}
+    </select>
+    
+    <insert id="insertMsDz">
+        insert into `${dBname}`.qs_ms_dz (rwid, dzname,time)
+        values (#{qsmsdz.rwid}, #{qsmsdz.dzname},#{qsmsdz.time})
+    </insert>
+    
+    <update id="updateMsDz">
+        update `${dBname}`.qs_ms_dz
+        set dzname=#{qsmsdz.dzname},time=#{qsmsdz.time} 
+        where id = #{qsmsdz.id}
+    </update>
+    
+    <delete id="deleteMsDz">
+        delete
+        from `${dBname}`.qs_ms_dz
+        where id = #{id}
+    </delete>
+    
+    <select id="findMsJg" resultType="com.photonstudio.pojo.Qsmsjg">
+        select a.*,b.dzname,c.reg_Name 
+        from `${dBname}`.qs_ms_jg a,`${dBname}`.qs_ms_dz b,`${dBname}`.reg c
+        where a.dzid = #{dzid} and a.dzid=b.id and a.regid=c.reg_id limit #{startIndex},#{pageSize}
+    </select>
+    
+    <select id="getCountJg" resultType="int">
+        select count(*)
+        from `${dBname}`.qs_ms_jg
+        where dzid = #{dzid}
+    </select>
+    
+    <insert id="insertMsJg">
+        insert into `${dBname}`.qs_ms_jg (dzid, regid,value)
+        values (#{qsmsjg.dzid}, #{qsmsjg.regid},#{qsmsjg.value})
+    </insert>
+    
+    <update id="updateMsJg">
+        update `${dBname}`.qs_ms_jg
+        set value=#{qsmsjg.value} 
+        where id = #{qsmsjg.id}
+    </update>
+    
+    <delete id="deleteMsJg">
+        delete
+        from `${dBname}`.qs_ms_jg
+        <where>
+	 		id in 
+	 		<foreach collection="ids" open="("
+	                close=")"
+	                separator=","
+	                item="id">
+	                #{id}
+	         </foreach> 
+ 		</where>
+    </delete>
+    
+    <select id="findQsmsjg" resultType="com.photonstudio.pojo.Qsmsjg">
+        select a.*,b.dzname,c.reg_Name,c.tag_name
+        from `${dBname}`.qs_ms_jg a,`${dBname}`.qs_ms_dz b,`${dBname}`.reg c
+        where a.dzid = #{dzid} and a.dzid=b.id and a.regid=c.reg_id
+    </select>
+    
+    <select id="findRowByJgId" resultType="int">
+        select count(*)
+        from `${dBname}`.qs_ms_jg
+        where id = #{id}
+    </select>
+    
+    <insert id="insertMsJb">
+        insert into `${dBname}`.qs_ms_jb (ymd, rwid)
+        values 
+			 <foreach collection="jbList" item="qsmsjb" separator=",">
+			(#{qsmsjb.ymd},#{qsmsjb.rwid})
+	 		</foreach>
+    </insert>
+    
+    <delete id="deleteMsJb">
+        delete
+        from `${dBname}`.qs_ms_jb
+        where ymd in <foreach collection="ymds" index="index" 
+				item="ymd" open="(" close=")" separator=",">
+					#{ymd}
+				</foreach>
+    </delete>
+    
+    <select id="findAllMsJb" resultType="com.photonstudio.pojo.Qsmsjb">
+        select a.*,b.drtypeid,b.msname,b.color,b.type
+        from `${dBname}`.qs_ms_jb a,`${dBname}`.qs_ms_rw b
+        where a.rwid=b.id
+    </select>
+    
+    <insert id="insertMsJbTime">
+        insert into `${dBname}`.qs_ms_jb_time (rwid,dzid,ymd,time)
+        	values 
+			 <foreach collection="timeList" item="qsmsjbtime" separator=",">
+			(#{qsmsjbtime.rwid}, #{qsmsjbtime.dzid},#{qsmsjbtime.ymd},#{qsmsjbtime.time})
+	 		</foreach>
+    </insert>
+    
+     <delete id="deleteMsJbTime">
+        delete
+        from `${dBname}`.qs_ms_jb_time
+        where ymd in <foreach collection="ymds" index="index" 
+				item="ymd" open="(" close=")" separator=",">
+					#{ymd}
+				</foreach>
+    </delete>
+    
+    <select id="findMSjbtimeBYymd" resultType="com.photonstudio.pojo.Qsmsjbtime">
+        select a.*,b.dzname
+        from `${dBname}`.qs_ms_jb_time a,`${dBname}`.qs_ms_dz b
+        where a.dzid = b.id and ymd in <foreach collection="ymds" index="index" 
+				item="ymd" open="(" close=")" separator=",">
+					#{ymd}
+				</foreach>
+    </select>
+    
+    <select id="findMSjbtime" resultType="com.photonstudio.pojo.Qsmsjbtime">
+        select a.*,b.dzname
+        from `${dBname}`.qs_ms_jb_time a,`${dBname}`.qs_ms_dz b
+        where  a.dzid = b.id
+    </select>
+    
+    <select id="findAllMSdz" resultType="com.photonstudio.pojo.Qsmsdz">
+        select *
+        from `${dBname}`.qs_ms_dz
+    </select>
+    
+    <select id="findQsMsJbtimeAfNow" resultType="com.photonstudio.pojo.Qsmsjbtime">
+        select a.*,b.dzname
+        from `${dBname}`.qs_ms_jb_time a,`${dBname}`.qs_ms_dz b
+        where  a.dzid = b.id and a.time >now()
+    </select>
+    
+    <insert id="insertQsmsjblog">
+        insert into `${dBname}`.qs_ms_jb_log (dzid, dzname,regname,value,state,sendtime)
+        values (#{qsmsjblog.dzid}, #{qsmsjblog.dzname},#{qsmsjblog.regname},#{qsmsjblog.value},#{qsmsjblog.state},#{qsmsjblog.sendtime})
+    </insert>
+    
+     <select id="getCountLog" resultType="int">
+        select count(*)
+        from `${dBname}`.qs_ms_jb_log
+        <where>
+         <if test="startTime!=null">
+             and sendtime  &gt;= #{startTime}
+         </if>
+         <if test="endTime!=null">
+             and sendtime &lt;= #{endTime}
+         </if>
+       </where>
+    </select>
+    
+    <select id="findMsJbLog" resultType="com.photonstudio.pojo.Qsmsjblog">
+        select * from `${dBname}`.qs_ms_jb_log a
+        <where>
+        1=1
+        <if test="startTime!=null">
+           and a.sendtime  &gt;= #{startTime}
+        </if>
+            <if test="endTime!=null">
+            and a.sendtime &lt;= #{endTime}
+          </if>
+            ORDER BY a.sendtime DESC
+            limit #{startIndex},#{pageSize}
+        </where>
+
+    </select>
+    
+    <select id="findMsDzById" resultType="com.photonstudio.pojo.Qsmsdz">
+        select *
+        from `${dBname}`.qs_ms_dz
+        where id = #{dzid}
+    </select>
+    
+    <select id="findMSjbtimeBYdzid" resultType="com.photonstudio.pojo.Qsmsjbtime">
+        select a.*,b.dzname
+        from `${dBname}`.qs_ms_jb_time a,`${dBname}`.qs_ms_dz b
+        where a.dzid=#{dzid} and  a.dzid = b.id 
+    </select>
+    
+    <update id="updateQsmsjbtime">
+        update `${dBname}`.qs_ms_jb_time
+       set time=
+	    <foreach collection="qsmsjbtimeList" item="qsmsjbtime" index="index" 
+	        separator=" " open="case JOBID" close="end">
+	        when #{qsmsjbtime.jobid} then #{qsmsjbtime.time}
+	    </foreach>
+	    where jobid in
+	    <foreach collection="qsmsjbtimeList" index="index" item="qsmsjbtime" 
+	        separator="," open="(" close=")">
+	        #{qsmsjbtime.jobid}
+	    </foreach>
+    </update>
+</mapper>

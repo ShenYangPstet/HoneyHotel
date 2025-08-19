@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.SysmenuMapper">
+	
+	<select id="findAll" resultType="com.photonstudio.pojo.Sysmenu" >
+		 
+		select * from zsqy_v2.sysmenu
+	
+		
+	</select>
+	<select id="createDatabase" resultType="java.lang.Boolean">
+	
+	create database if not exists ${name} ;
+	USE zsqy_v2;
+	CREATE TABLE if not exists sysmenu (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  parentId int(11) DEFAULT NULL,
+  menuName varchar(50) DEFAULT NULL,
+  menuPath varchar(100) DEFAULT NULL,
+  menuLevel varchar(10) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS appmanager (
+	appid INT ( 11 ) NOT NULL AUTO_INCREMENT COMMENT '项目id',
+	appName VARCHAR ( 50 ) DEFAULT NULL COMMENT '名称',
+	ipaddr VARCHAR ( 50 ) DEFAULT NULL,
+	appport VARCHAR ( 10 ) DEFAULT NULL,
+	apptypeid VARCHAR ( 50 ) DEFAULT NULL,
+	appimg VARCHAR ( 50 ) DEFAULT NULL,
+	appexplain VARCHAR ( 150 ) DEFAULT NULL,
+	appstate VARCHAR ( 10 ) DEFAULT NULL,
+	state VARCHAR ( 10 ) DEFAULT NULL,
+PRIMARY KEY ( appid ) 
+) ENGINE = INNODB AUTO_INCREMENT = 19 DEFAULT CHARSET = utf8;
+CREATE TABLE IF NOT EXISTS apptype (
+  `id` bigint(20) NOT NULL,
+  `apptypename` varchar(50) DEFAULT NULL,
+  `explain` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS appusergroup (
+  `id` int(11) NOT NULL,
+  `userid` varchar(10) DEFAULT NULL,
+  `appid` varchar(10) DEFAULT NULL,
+  `appuserground` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS icon (
+  `iconid` int(11) NOT NULL,
+  `iconname` varchar(50) DEFAULT NULL,
+  `icontype` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`iconid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS appsysuser (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  `licensetype` varchar(10) DEFAULT NULL,
+  `licensetime` varchar(50) DEFAULT NULL,
+  `role` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+
+
+	</select>
+	<delete id="deleteDatabase" >
+			drop database ${name};
+	</delete>
+	
+	<select id="createTable" >
+	USE zsqy_v2;
+	CREATE TABLE if not exists sysmenu (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  parentId int(11) DEFAULT NULL,
+  menuName varchar(50) DEFAULT NULL,
+  menuPath varchar(100) DEFAULT NULL,
+  menuLevel varchar(10) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
+	</select>
+	<delete id="deleteTable">
+	
+	DROP TABLE ${dbname}.${tablename};
+	</delete>
+	<insert id="insert" >
+	
+	insert into ${dbname}.${tablename} (id,name) values (#{user.id},#{user.name});
+	</insert>
+	 <delete id="delete">
+	 
+	 DELETE FROM ${dbname}.user where id=#{id}
+	 </delete>
+	 <update id="update" >
+	 
+	  UPDATE ${dbname}.user
+ 
+       set 
+  name=#{user.name}
+ 
+
+ WHERE id=#{user.id}
+	 </update>
+	 <select id="findmenuByParentId" resultType="com.photonstudio.pojo.Sysmenu">
+	 select * from zsqy_v2.sysmenu
+	  where parentId=#{parentId} 
+	  
+	   ORDER BY menuLevel
+	 </select>
+	 <insert id="insertMenu">
+	 insert into zsqy_v2.sysmenu (id,parentId,menuName,menuPath,menuLevel) values
+	 (#{id},#{parentId},#{menuName},#{menuPath},#{menuLevel})
+	 </insert>
+	 <update id="updatemenu" >
+	  	update zsqy_v2.sysmenu
+ 	<set>
+             <if test="menuName!=null and menuName!=''">
+               menuName=#{menuName},
+             </if>
+             <if test="menuPath!=null and menuPath!=''">
+                  menuPath=#{menuPath},
+             </if>
+             <if test="menuLevel!=null">
+                menuLevel=#{menuLevel},
+             </if>
+          
+                parentId=#{parentId}
+          </set>
+          where id=#{id} 
+	 </update>
+	 
+	 <delete id="deleteMenuById">
+	 delete from zsqy_v2.sysmenu
+ 	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach>
+ 	</where>
+	 
+	 </delete>
+	 <select id="findChildrenId" resultType="int">
+	 	SELECT id FROM zsqy_v2.sysmenu WHERE parentId=#{id}
+	 </select>
+</mapper>

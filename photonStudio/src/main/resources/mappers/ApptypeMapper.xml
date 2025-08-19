@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.ApptypeMapper">
+
+<select id="findObject" resultType="com.photonstudio.pojo.Apptype">
+  select * from zsqy_v2.apptype
+  <if test="pageSize!=null and pageSize!=''">
+	 limit #{startIndex},#{pageSize}
+  </if>
+</select>
+
+<select id="getRowCount" resultType="int">
+select count(*) from zsqy_v2.apptype
+</select>
+  <insert id="insertObject" >
+	
+	insert into zsqy_v2.apptype (apptypename,`explain`) values (#{apptypename},#{explain});
+	</insert>
+	<delete id="deleteObjectById" >
+	DELETE FROM zsqy_v2.apptype
+	<where>
+	 id in
+	 <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+	</delete>
+	<update id="updateObject">
+	update zsqy_v2.apptype
+ 	<set>
+             <if test="apptypename!=null and apptypename!=''">
+               apptypename=#{apptypename},
+             </if>
+                `explain`=#{explain}
+          </set>
+          where id=#{id} 
+	</update>
+</mapper>

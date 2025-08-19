@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.EnergyparmMapper">
+	<select id="findObject" resultType="Energyparm">
+	select * from `${dBname}`.energyparm 
+	<if test="pageSize!=null and pageSize!=''">
+          limit #{startIndex},#{pageSize}
+		</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.energyparm
+	</select>
+	<insert id="insertObject">
+	insert into `${dBname}`.energyparm (day_energy,dr_cost,
+	people_cost,carbon_parm,tree_parm,cost_parm) values (#{energyparm.dayEnergy},
+	#{energyparm.drCost},#{energyparm.peopleCost},
+	#{energyparm.carbonParm},#{energyparm.treeParm},#{energyparm.costParm})
+	</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.energyparm 
+	<where>
+	id = #{id}
+	</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.energyparm 
+	<set>
+	<if test="energyparm.dayEnergy!=null and energyparm.dayEnergy!=''">
+	day_energy=#{energyparm.dayEnergy},
+	</if>
+	<if test="energyparm.drCost!=null and energyparm.drCost!=''">
+	dr_cost=#{energyparm.drCost},
+	</if>
+	<if test="energyparm.peopleCost!=null and energyparm.peopleCost!=''">
+	people_cost=#{energyparm.peopleCost},
+	</if>
+	<if test="energyparm.carbonParm!=null and energyparm.carbonParm!=''">
+	carbon_parm=#{energyparm.carbonParm},
+	</if>
+	<if test="energyparm.treeParm!=null and energyparm.treeParm!=''">
+	tree_parm=#{energyparm.treeParm},
+	</if>
+	<if test="energyparm.costParm!=null and energyparm.costParm!=''">
+	cost_parm=#{energyparm.costParm},
+	</if>
+	id=#{energyparm.id}
+	</set>
+	<where>
+	id=#{energyparm.id}
+	</where>
+	</update>
+</mapper>

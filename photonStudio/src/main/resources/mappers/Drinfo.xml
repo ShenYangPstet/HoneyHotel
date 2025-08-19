@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.DrinfoMapper">
+<select id="findObject" resultType="com.photonstudio.pojo.Drinfo">
+	SELECT a.*, b.buildname ,c.drtypename,d.assetstypename, 
+	e.roomname FROM `${dBname}`.drinfo a 
+	LEFT JOIN `${dBname}`.buildinfo b on a.buildid=b.buildid 
+	LEFT JOIN `${dBname}`.drtypeinfo c on a.drtypeid=c.drtypeid 
+	left join `${dBname}`.assetstype d on a.assets_typeid=d.id 
+	left join `${dBname}`.storeroom e on a.storeroom=e.id 
+	<where>
+	1=1
+	<if test="drtypeid!=null and drtypeid!=''">
+	and	a.drtypeid=#{drtypeid}
+	</if>
+	<if test="mdcode!=null and mdcode!=''">
+	and a.MDcode like concat("%",#{mdcode},"%") 
+	</if>
+	<if test="userid!=null and userid!=''">
+	and a.drid in (select drid from `${dBname}`.dr_user where userid=#{userid})
+	</if>
+		<if test="floorId!=null and floorId!=''">
+         and  b.buildid=#{floorId}
+		</if>
+		<if test="drname!=null and drname!=''">
+			and a.drname like concat("%",#{drname},"%")
+		</if>
+	<if test="dridlist!=null and dridlist.size()>0">
+	and a.drid in <foreach collection="dridlist" index="index" 
+				item="drid" open="(" close=")" separator=",">
+	#{drid}
+	</foreach>
+	</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+
+</select> 
+	<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.drinfo
+  <where>
+  1=1
+		<if test="drtypeid!=null and drtypeid!=''">
+		and drtypeid=#{drtypeid}
+	   </if>
+	   <if test="mdcode!=null and mdcode!=''">
+	and MDcode like concat("%",#{mdcode},"%") 
+	</if>
+	<if test="userid!=null and userid!=''">
+	and userid=#{userid}
+	</if>
+	  <if test="drname!=null and drname!=''">
+		  and drname like concat("%",#{drname},"%")
+	  </if>
+	<if test="dridlist!=null and dridlist.size()>0">
+	and drid in <foreach collection="dridlist" index="index" 
+				item="drid" open="(" close=")" separator=",">
+	#{drid}
+	</foreach>
+	</if>
+		</where>
+</select>
+<select id="findAllIsUser" resultType="Drinfo">
+SELECT * FROM `${dBname}`.drinfo
+<where>
+	1=1
+		<if test="drtypeid!=null and drtypeid!=''">
+		and drtypeid=#{drtypeid}
+	   </if>
+	   and userid is null
+	</where>
+</select>
+<select id="findDridByUserid" resultType="int">
+SELECT * FROM `${dBname}`.drinfo WHERE drid IN (select drid from `${dBname}`.dr_user where userid=#{userid})<!-- (SELECT drid FROM `${dBname}`.departmentdr WHERE departmentid=(SELECT departmentid FROM `${dBname}`.appuser WHERE userid=#{userid}) ) -->
+</select>
+<insert id="insertObject" parameterType="com.photonstudio.pojo.Drinfo">
+	insert into `${dBname}`.drinfo  (drname,drtypeid,buildid,spid,dr_ManufactureStyle,
+	dr_ManufactureFactory,dr_Factoryphone,dr_InstallTime,dr_InstallFactory,dr_InstallPhone,
+	assets_typeid,dr_UseState,storeroom,dr_UseExplain,instructionsid,MDcode,departmentid,
+	typeYT,userid) values (#{drinfo.drname},#{drinfo.drtypeid}, #{drinfo.buildid},
+ 	   #{drinfo.spid},#{drinfo.drManufactureStyle},#{drinfo.drManufactureFactory},
+ 	   #{drinfo.drFactoryphone},#{drinfo.drInstallTime},#{drinfo.drInstallFactory},
+ 	   #{drinfo.drInstallPhone},#{drinfo.assetsTypeid},#{drinfo.drUseState},
+ 	   #{drinfo.storeroom},#{drinfo.drUseExplain},#{drinfo.instructionsid},
+ 	   #{drinfo.mdcode},#{drinfo.departmentid},#{drinfo.typeYT},#{drinfo.userid});
+ 	   <selectKey resultType="int" keyProperty="drinfo.drid" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+</insert>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.drinfo 
+	<where>
+ 		drid in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+</delete>
+<update id="updateObject">
+ 	update `${dBname}`.drinfo 
+ 	<set>
+             
+                  drtypeid=#{drinfo.drtypeid},
+           
+                buildid=#{drinfo.buildid},
+            
+                spid=#{drinfo.spid},
+             
+                dr_ManufactureStyle=#{drinfo.drManufactureStyle},
+            
+                dr_ManufactureFactory=#{drinfo.drManufactureFactory},
+            
+                dr_Factoryphone=#{drinfo.drFactoryphone},
+            
+                dr_InstallTime=#{drinfo.drInstallTime},
+            
+                dr_InstallFactory=#{drinfo.drInstallFactory},
+            
+                dr_InstallPhone=#{drinfo.drInstallPhone},
+            
+                assets_typeid=#{drinfo.assetsTypeid},
+           
+                dr_UseState=#{drinfo.drUseState},
+            
+                storeroom=#{drinfo.storeroom},
+            
+                dr_UseExplain=#{drinfo.drUseExplain},
+            
+                instructionsid=#{drinfo.instructionsid},
+            
+                MDcode=#{drinfo.mdcode},
+            
+                dr_UseState=#{drinfo.departmentid},
+            
+                typeYT=#{drinfo.typeYT},
+             
+                drname=#{drinfo.drname},
+             
+                userid=#{drinfo.userid},
+             
+             drid=#{drinfo.drid}
+          </set>
+          where drid=#{drinfo.drid} 
+ </update>
+ <update id="updateRegname">
+ 	update `${dBname}`.reg 
+ 	<set>
+ 	reg_name=CONCAT(#{drname},':',substring_index(reg_name,':',-1)),
+ 	</set>
+ 	<where>
+ 	 dr_Id = #{drid}
+ 	</where>
+ </update>
+	<select id="findAll" resultType="com.photonstudio.pojo.Drinfo">
+	SELECT * FROM `${dBname}`.drinfo
+	</select>
+	<select id="findObjectById" resultType="int">
+	SELECT COUNT(*) FROM `${dBname}`.drinfo
+	<where>
+		drid=#{drid}
+	</where>
+	</select>
+	<select id="findObjectByIds" resultType="Drinfo">
+	SELECT * FROM `${dBname}`.drinfo
+	<where>
+	    1=1
+	<if test="ids!=null and ids!=''">
+ 		and drid in
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach>
+	</if>
+		<if test="drname!=null and drname!=''">
+			and drname like concat("%",#{drname},"%")
+		</if>
+ 	</where>
+	</select>
+	<select id="findJSONobjectByIds" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT dr.drid,dr.drname, dr.buildid, dr.drtypeid, dr.spid,dr.typeYT,dr.dr_ManufactureFactory,dr.dr_ManufactureStyle,dr.dr_Factoryphone,dr.dr_InstallFactory,dr.dr_UseExplain,dr.MDcode,dt.parameter_display as parameterDisplay,dt.parameter_list as parameterList FROM `${dBname}`.drinfo dr
+		left join drtypeinfo dt ON dr.drtypeid=dt.drtypeid
+		<where>
+		    1=1
+			<if test="drIds!=null">
+				and drid in
+				<foreach collection="drIds" open="("
+						 close=")"
+						 separator=","
+						 item="id">
+					#{id}
+				</foreach>
+			</if>
+			<if test="drname!=null and drname!=''">
+				and drname like concat("%",#{drname},"%")
+			</if>
+		</where>
+	</select>
+	<select id="getIconTypeByDrIds" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT d.drid, d.drname, d.drtypeid, d.spid ,CONCAT(#{staticAccessPath},'images/icon/',ic.icontype,'/','drstate.',ic.iconsuffix) as icontype FROM drinfo d
+		    left join drtypeinfo dp on d.drtypeid=dp.drtypeid
+		    left join zsqy_v2.icon ic on dp.drtypeiconid=ic.iconid
+		<where>
+			1=1
+			<if test="drIdList!=null">
+				and drid in
+				<foreach collection="drIdList" open="("
+						 close=")"
+						 separator=","
+						 item="id">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	<select id="findDrByDrid" resultType="Drinfo">
+	SELECT * FROM `${dBname}`.drinfo
+	<where>
+		drid=#{drid}
+	</where>
+	</select>
+	<insert id="updateUser">
+	insert into `${dBname}`.dr_user 
+	(userid,drid) values
+	 <foreach collection="ids" item="id" separator=",">
+	 (#{userid},#{id})
+	</foreach>
+	</insert>
+	<delete id="removeUser">
+	delete from `${dBname}`.dr_user 
+	<where>
+	drid in <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> and userid = #{userid}
+	</where> 
+	</delete>
+	<select id="findCountByUseridDrid" resultType="int">
+	SELECT  COUNT(*) FROM `${dBname}`.dr_user
+	 <where>
+	drid = #{drid} and userid=#{userid} 
+	</where> 
+	</select>
+	<select id="querySpid" resultType="String">
+	SELECT spid FROM `${dBname}`.mj_sp where mjid=#{rdid}
+	</select>
+</mapper>

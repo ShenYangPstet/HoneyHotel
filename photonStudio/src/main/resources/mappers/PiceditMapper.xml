@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.PiceditMapper">
+    
+ 	<select id="findPiceditByPicid" resultType="com.photonstudio.pojo.Picedit">
+   		select q.*,CONCAT(#{staticAccessPath},'images/icon/',t.icontype,'/') as icontype from (SELECT n.*,1 AS state,m.drtypeid,m.drtypename,m.drname,m.spid,m.mdcode from (select a.* ,b.drtypename from `${dBname}`.drinfo a,`${dBname}`.drtypeinfo b where a.drtypeid = b.drtypeid
+   		 <if test="dridlist!=null and dridlist.size()>0">
+	and a.drid in <foreach collection="dridlist" index="index" 
+				item="drid" open="(" close=")" separator=",">
+	#{drid}
+	</foreach>
+	</if>
+   		) m,`${dBname}`.picedit n
+		WHERE m.drid = n.drid and n.picid=#{picid}) q LEFT JOIN zsqy_v2.icon t on q.drshowtype = t.iconid
+  	</select>
+  	<select id="findPiceditByPicidAnddrtypeid" resultType="com.photonstudio.pojo.Picedit">
+   		select q.*,CONCAT(#{staticAccessPath},'images/icon/',t.icontype,'/') as icontype from (SELECT n.*,1 AS state,m.drtypeid,m.drtypename,m.drname,m.spid,m.mdcode from (select a.* ,b.drtypename from `${dBname}`.drinfo a,`${dBname}`.drtypeinfo b where a.drtypeid = b.drtypeid and a.drtypeid in ${drtypeids}) m,`${dBname}`.picedit n
+		WHERE m.drid = n.drid and n.picid=#{picid}) q LEFT JOIN zsqy_v2.icon t on q.drshowtype = t.iconid
+  	</select>
+  	<select id="findDrinfoBydrid" resultType="com.photonstudio.pojo.Drinfo">
+	 select m.*,n.iconname,CONCAT(#{staticAccessPath},'images/icon/',n.icontype,'/') as icontype from (select a.*,b.drtypeiconid ,b.drtypename from `${dBname}`.drinfo a,`${dBname}`.drtypeinfo b where a.drid=#{drid} and a.drtypeid = b.drtypeid) m,zsqy_v2.icon n
+		where m.drtypeiconid=n.iconid;
+	 </select>
+	 <select id="findPiceditElByPicid" resultType="com.photonstudio.pojo.Picedit">
+   		select * from `${dBname}`.picedit where picid=#{picid} and type='2';
+  	 </select>
+  	 <select id="findAllPiceditByPicid" resultType="com.photonstudio.pojo.Picedit">
+   		select * from `${dBname}`.picedit where picid=#{picid};
+  	 </select>
+  	 <select id="findPiceditAngleById" resultType="int">
+   		select angle from `${dBname}`.picedit where id=#{id};
+  	 </select>
+  	 <select id="findPiceditZindexById" resultType="String">
+   		select z_index from `${dBname}`.picedit where id=#{id};
+  	 </select>
+  	 <select id="getDrtypeiconId" resultType="Integer">
+   		select drtypeiconid from `${dBname}`.drtypeinfo where drtypeid in (select drtypeid from `${dBname}`.drinfo where drid=#{drid})
+  	 </select>
+  	<select id="findPiceditById" resultType="com.photonstudio.pojo.Picedit">
+   		select * from `${dBname}`.picedit
+  	 <where>
+   		id=#{id}
+  	 </where>
+  	</select>
+  	<select id="findPiceditByPicidAndIds" resultType="com.photonstudio.pojo.Picedit">
+   		select * from `${dBname}`.picedit
+  	 <where>
+   		picid=#{picid}
+   		<if test="ids!=null and ids!=''">
+ 		and id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</if>
+  	 </where>
+  	</select>
+  	<select id="findElementsListByElepicid" resultType="com.photonstudio.pojo.Elements">
+   		select a.*,b.imgurl from `${dBname}`.elements a LEFT JOIN `${dBname}`.images b on a.imgid = b.imgid
+  	 <where>
+   		a.elemtpiceditid=#{elemtpiceditid}
+  	 </where>
+  	</select>
+  	<select id="findElemttypemodeByElemttypeid" resultType="com.photonstudio.pojo.Elemttypemode">
+   		select * from `${dBname}`.elemttypemode
+  	 <where>
+   		elemttypeid=#{elemttypeid}
+  	 </where>
+  	</select>
+  	<select id="queryElementsByElemtpiceditid" resultType="com.photonstudio.pojo.Elements">
+   		select * from `${dBname}`.elements
+  	 <where>
+   		elemtpiceditid=#{id}
+  	 </where>
+  	 </select>
+  	 <select id="findElementsByElemtsid" resultType="com.photonstudio.pojo.Elements">
+   		select * from `${dBname}`.elements
+  	 <where>
+   		elemtsid=#{elemtsid}
+  	 </where>
+  	</select>
+  	<select id="getElemtpiceditid" resultType="Integer">
+   		select @@IDENTITY
+  	</select>
+ 	 <insert id="insertObject">
+		 insert into `${dBname}`.picedit (picid,drid,
+		 drshowtype,showicon,isshowname,elemttypeid,picx,picy,type,z_index,pich,picw,angle,lng,lat) values 
+	 	(#{picedit.picid},#{picedit.drid},#{picedit.drshowtype},
+	 	#{picedit.showicon},#{picedit.isshowname},#{picedit.elemttypeid},#{picedit.picx},#{picedit.picy}
+	 	,#{picedit.type},#{picedit.zindex},#{picedit.pich},#{picedit.picw},#{picedit.angle},#{picedit.lng},#{picedit.lat})
+  	</insert>
+  	<insert id="insertElements">
+		 insert into `${dBname}`.elements (elemtpiceditid,
+		 elemttypeid,elemtELtype,elemtlevel,elemtstyle,text,imgid,Bdtype,Bdreg,
+		 Bddrtype,subid,Cscript,Sscript,colour,elemtmodename) values 
+	 	(#{elements.elemtpiceditid},#{elements.elemttypeid},
+	 	#{elements.elemtELtype},#{elements.elemtlevel},#{elements.elemtstyle},#{elements.text},#{elements.imgid},#{elements.Bdtype}
+	 	,#{elements.Bdreg},#{elements.Bddrtype},#{elements.subid},#{elements.Cscript},#{elements.Sscript},#{elements.colour},#{elements.elemtmodename})
+  	</insert>
+  	<delete id="deletePicEdit">
+	 delete from `${dBname}`.picedit
+ 	 <where>
+ 		id = #{id}
+ 	 </where>
+	</delete>
+	<delete id="deleteElements">
+	 delete from `${dBname}`.elements
+ 	 <where>
+ 		elemtpiceditid = #{id}
+ 	 </where>
+	</delete>
+	<delete id="deletePicEditByDrid">
+	delete from `${dBname}`.picedit
+ 	 <where>
+ 		drid in <foreach collection="drids" open="("
+                close=")"
+                separator=","
+                item="drid">
+                #{drid}
+         </foreach> 
+ 	 </where>
+	</delete>
+	<update id="updatePicEdit">
+	   	update `${dBname}`.picedit 
+ 		<set>
+        picx=#{picedit.picx},picy=#{picedit.picy},z_index=#{picedit.zindex},pich=#{picedit.pich},picw=#{picedit.picw},angle=#{picedit.angle}
+    	</set>
+        where id=#{picedit.id}
+	 </update>
+	 <update id="updatePicEditAll">
+	   	update `${dBname}`.picedit 
+ 		<set>
+        picid=#{picedit.picid},drid=#{picedit.drid},drshowtype=#{picedit.drshowtype},elemttypeid=#{picedit.elemttypeid},picx=#{picedit.picx},picy=#{picedit.picy},z_index=#{picedit.zindex},pich=#{picedit.pich},picw=#{picedit.picw},angle=#{picedit.angle}
+    	</set>
+        where id=#{picedit.id}
+	 </update>
+	 
+	 <update id="updatePicEditAndDrinfo">
+	   	update `${dBname}`.picedit 
+ 		<set>
+        isshowname=#{isshowname},drshowtype=#{drshowtype} 
+    	</set>
+        where id=#{id}
+	 </update>
+	 <update id="updateDrinfoSpid">
+	   	update `${dBname}`.drinfo 
+ 		<set>
+        spid=#{spid}
+    	</set>
+        where drid=#{drid}
+	 </update>
+	 
+	 <update id="updateElements">
+	   	update `${dBname}`.elements 
+ 		<set>
+        elemtstyle=#{elements.elemtstyle},
+        text=#{elements.text},
+        imgid=#{elements.imgid},
+        Bdtype=#{elements.Bdtype},
+        Bdreg=#{elements.Bdreg},
+        Bddrtype=#{elements.Bddrtype},
+        subid=#{elements.subid},
+        Cscript=#{elements.Cscript},
+        Sscript=#{elements.Sscript},
+        colour=#{elements.colour}
+    	</set>
+        where elemtsid=#{elements.elemtsid}
+	 </update>
+	 <update id="updatePiceditAngle">
+	   	update `${dBname}`.picedit 
+ 		<set>
+        angle=#{angle}
+    	</set>
+        where id=#{id}
+	 </update>
+	 <update id="updatePiceditZindex">
+	   	update `${dBname}`.picedit 
+ 		<set>
+        z_index=#{zindex}
+    	</set>
+        where id=#{id}
+	 </update>
+	 <update id="updatePicEditLngAndLat">
+	   	update `${dBname}`.picedit 
+ 		<set>
+        lng=#{lng},lat=#{lat} 
+    	</set>
+        where id=#{id}
+	 </update>
+	 
+	 <select id="selectElements" resultType="int">
+  		SELECT COUNT(*) FROM `${dBname}`.elements
+ 	 	<where>
+ 	 	elemtpiceditid = #{id}
+		</where>
+	</select>
+	<select id="queryDrinfoType" resultType="com.photonstudio.pojo.Drtypeinfo">
+   		select * from `${dBname}`.drtypeinfo
+  	 <where>
+   		drtypeid=#{drtypeId}
+  	 </where>
+  	 </select>
+  	 <select id="queryDrinfo" resultType="com.photonstudio.pojo.Drinfo">
+   		select * from `${dBname}`.drinfo
+  	 <where>
+   		drid=#{drid}
+  	 </where>
+  	 </select>
+  	 <select id="queryReg" resultType="com.photonstudio.pojo.Reg">
+   		select a.*,b.tagvalue as newtagvalue from `${dBname}`.reg a left join `${dBname}`.qstag b on a.tag_name=b.tagname 
+  	 <where>
+   		dr_Id=#{drid}
+  	 </where>
+  	 </select>
+  	 <select id="queryDrtypemodePic" resultType="com.photonstudio.pojo.Drtypemode">
+   		select * from `${dBname}`.drtypemode
+  	 <where>
+   		drtypeid=#{drtypeId}
+  	 </where>
+  	 </select>
+  	 <select id="findImagesByPicid" resultType="String">
+   		select b.imgurl from `${dBname}`.pic a,`${dBname}`.images b where a.img_id = b.imgid and a.picid=#{picid}
+  	 </select>
+  	 <select id="findrunstateBydrid" resultType="com.photonstudio.pojo.Reg">
+   		select a.*,b.tagvalue as newtagvalue from `${dBname}`.reg a left join `${dBname}`.qstag b on a.tag_name=b.tagname where a.dr_Id=#{drid} and a.reg_DrShowType in ('1','2','3')
+  	 </select>
+  	 <select id="findalarmstateBydrid" resultType="int">
+   		select count(*) from `${dBname}`.reg where reg_DrShowType='2' and tag_alarm_state='1' and dr_Id=#{drid}
+  	 </select>
+  	 <select id="finderrorstateBydrid" resultType="int">
+   		select count(*) from `${dBname}`.reg where reg_DrShowType='3' and tag_alarm_state='1' and dr_Id=#{drid}
+  	 </select>
+  	 <select id="querytagvalue" resultType="String">
+   		select tagvalue from `${dBname}`.qstag where tagname=#{tagName}
+  	 </select>
+  	 <select id="findDrStateByPicid" resultType="com.photonstudio.pojo.Reg">
+   		select * from `${dBname}`.reg where dr_Id in (select DISTINCT drid from `${dBname}`.picedit where picid=#{picid} and type='1') and reg_DrShowType in ('1','2','3')
+  	 </select>
+  	 <select id="findDrbyPicid" resultType="com.photonstudio.pojo.Drinfo">
+   		select * from `${dBname}`.drinfo where drid in (select DISTINCT drid from `${dBname}`.picedit where picid=#{picid} and type='1')
+  	 </select>
+  	 <select id="findDrbyPicidAnddrtypeid" resultType="com.photonstudio.pojo.Drinfo">
+   		select * from `${dBname}`.drinfo where drid in (select DISTINCT drid from `${dBname}`.picedit where picid=#{picid} and type='1') and drtypeid in ${drtypeids}
+  	 </select>
+  	 <select id="findDrtypeParentId" resultType="int">
+   		select parentid from `${dBname}`.drtypeinfo where drtypeid=#{drtypeid}
+  	 </select>
+</mapper>

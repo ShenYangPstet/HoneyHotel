@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QsworkorderMapper">
+<select id="findObject" resultType="com.photonstudio.pojo.Qsworkorder">
+	select a.*,b.drtypename,c.drname from `${dBname}`.qs_workorder a,`${dBname}`.drtypeinfo b,`${dBname}`.drinfo c 
+	where a.drtypeid=b.drtypeid and a.drid=c.drid  
+	<if test="state!=null">
+		and state=#{state}
+	</if>
+	<if test="pageSize!=null">
+	limit #{startIndex},#{pageSize}
+	</if>
+</select> 
+	<select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.qs_workorder
+ 	 <where>
+		<if test="state!=null">
+		state=#{state}
+	   </if>
+	</where>
+</select>
+<select id="findObjectByNumber" resultType="com.photonstudio.pojo.Qsworkorder">
+	select * from `${dBname}`.qs_workorder 
+	<where>
+		Number=#{number}
+	</where>
+</select> 
+<select id="findObjectByIds" resultType="Qsworkorder">
+	select a.*,b.drtypename,c.drname from `${dBname}`.qs_workorder a,`${dBname}`.drtypeinfo b,`${dBname}`.drinfo c 
+	<where> 
+	a.drtypeid=b.drtypeid and a.drid=c.drid 
+	<if test="ids!=null and ids!=''">
+ 		drid in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+         </if>
+	</where>
+</select>
+<insert id="save">
+	insert into `${dBname}`.qs_workorder  (drtypeid,drid,worktime,workuser,worklevel,
+	executeuser,executetime,finishtime,state,workexplain)
+ 	   values (#{qsworkorder.drtypeid},#{qsworkorder.drid}, #{qsworkorder.worktime},
+ 	   #{qsworkorder.workuser},#{qsworkorder.worklevel},#{qsworkorder.executeuser},
+ 	   #{qsworkorder.executetime},#{qsworkorder.finishtime},#{qsworkorder.state},
+ 	   #{qsworkorder.workexplain});
+</insert>
+<delete id="delete">
+	delete from `${dBname}`.qs_workorder 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+</delete>
+<update id="update">
+ 	update `${dBname}`.qs_workorder 
+ 	<set>
+             <if test="qsworkorder.drtypeid!=null">
+                drtypeid=#{qsworkorder.drtypeid},
+             </if>
+             <if test="qsworkorder.drid!=null">
+                drid=#{qsworkorder.drid},
+             </if>
+             <if test="qsworkorder.worktime!=null">
+                worktime=#{qsworkorder.worktime},
+             </if>
+             <if test="qsworkorder.workuser!=null and qsworkorder.workuser!=''">
+                workuser=#{qsworkorder.workuser},
+             </if>
+             <if test="qsworkorder.worklevel!=null">
+                worklevel=#{qsworkorder.worklevel},
+             </if>
+             <if test="qsworkorder.executeuser!=null and qsworkorder.executeuser!=''">
+                executeuser=#{qsworkorder.executeuser},
+             </if>
+             <if test="qsworkorder.executetime!=null">
+                executetime=#{qsworkorder.executetime},
+             </if>
+             <if test="qsworkorder.finishtime!=null">
+                finishtime=#{qsworkorder.finishtime},
+             </if>
+             <if test="qsworkorder.state!=null">
+                state=#{qsworkorder.state},
+             </if>
+                workexplain=#{qsworkorder.workexplain}
+          </set>
+          where id=#{qsworkorder.id} 
+ </update>
+ <select id="findEC" resultType="com.photonstudio.pojo.EcharsObject">
+ SELECT (CASE WHEN state = '1' 
+ THEN '未处理' WHEN state = '2' 
+ THEN '正在处理' WHEN state = '3' 
+ THEN '处理完毕' END )AS 'name',
+ count(*) AS 'value' from `${dBname}`.qs_workorder 
+ GROUP BY state
+ </select>
+ 
+ <select id="finddrcehcklog" resultType="com.photonstudio.pojo.DrCheckLog">
+ 	select dcl.* from `${dBname}`.dr_check_log dcl
+ 	<where>
+ 		<if test="checkPerson!=null and checkPerson!=''">
+ 			dcl.username like '%${checkPerson}%'
+ 		</if>
+ 		<if test="checkDate!=null">
+ 			and dcl.time &gt;= #{checkDate}
+ 		</if>
+ 	</where>
+ 	limit #{startIndex},#{pageSize}
+ </select>
+ 
+ <select id="getDrCheckLogCount" resultType="int">
+ 	select count(*) from `${dBname}`.dr_check_log dcl
+ 	<where>
+ 		<if test="checkPerson!=null and checkPerson!=''">
+ 			dcl.username like '%${checkPerson}%'
+ 		</if>
+ 		<if test="checkDate!=null">
+ 			and dcl.time &gt;= #{checkDate}
+ 		</if>
+ 	</where>
+ </select>
+	<select id="findworklist" resultType="com.photonstudio.pojo.Qsworkorder">
+		select a.*,b.drname from `${dBname}`.qs_workorder a,`${dBname}`.drinfo b
+		<where>
+			a.drid = b.drid and a.state = #{state}
+			<if test="username!=null">
+				and a.executeuser =#{username}
+			</if>
+			<if test="workuser!=null">
+				and a.workuser =#{workuser}
+			</if>
+			<if test="startDate!=null">
+				and a.worktime &gt;= #{startDate}
+			</if>
+			<if test="endDate!=null">
+				and a.worktime &lt;= #{endDate}
+			</if>
+			<if test="approvestate!=null">
+				and a.approvestate = #{approvestate}
+			</if>
+		</where>
+	</select>
+</mapper>

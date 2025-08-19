@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.UsergroupMapper">
+<select id="findAll" resultType="com.photonstudio.pojo.Usergroup">
+select * from `${dBname}`.usergroup
+</select>
+<select id="findObject" resultType="com.photonstudio.pojo.Usergroup">
+	select * from `${dBname}`.usergroup
+	
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+</select>
+<select id="findObjectById" resultType="Usergroup">
+	select * from `${dBname}`.usergroup
+	<where>
+	<if test="id!=null">
+	id=#{id}
+	</if>
+	</where>
+</select>
+<select id="getRowCount" resultType="int">
+	SELECT COUNT(*) FROM `${dBname}`.usergroup
+</select>
+<insert id="insertObject">
+	insert into `${dBname}`.usergroup (usergroupname,qx)
+	 values (#{usergroup.usergroupname},#{usergroup.qx})
+</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.usergroup 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.usergroup 
+	<set>
+	usergroupname=#{usergroup.usergroupname},
+	qx=#{usergroup.qx}
+	</set> 
+	<where>
+		id=#{usergroup.id}
+	</where>
+	</update>
+</mapper>

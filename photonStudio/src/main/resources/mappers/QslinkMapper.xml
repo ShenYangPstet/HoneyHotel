@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.photonstudio.mapper.QslinkMapper">
+    <select id="findLinkTj" resultType="com.photonstudio.pojo.Qslinktj">
+        select * from `${dBname}`.qs_link_tj
+    </select>
+    
+    <insert id="insertLinkTj">
+        insert into `${dBname}`.qs_link_tj (tj_name) values (#{qslinktj.tjName})
+    </insert>
+    
+    <update id="updateLinkTj">
+        update `${dBname}`.qs_link_tj set tj_name = #{qslinktj.tjName} where tj_id=#{qslinktj.tjId}
+    </update>
+    
+    <delete id="deleteLinkTj">
+        delete from `${dBname}`.qs_link_tj where tj_id=#{id};
+        delete from `${dBname}`.qs_link_tj_info where tj_id=#{id};
+    </delete>
+    
+    <select id="getCountTjinfo" resultType="int">
+        select count(*) from `${dBname}`.qs_link_tj_info where  tj_id=#{tjId}
+    </select>
+    
+     <select id="findLinkTjinfoPage" resultType="com.photonstudio.pojo.Qslinktjinfo">
+        select a.*,b.reg_Name,b.tag_name,c.tj_name from `${dBname}`.qs_link_tj_info a,`${dBname}`.reg b,`${dBname}`.qs_link_tj c where a.tj_id = #{tjId} and a.tj_id=c.tj_id and a.reg_id = b.reg_id limit #{startIndex},#{pageSize}
+    </select>
+    
+    <select id="findLinkTjinfo" resultType="com.photonstudio.pojo.Qslinktjinfo">
+        select a.*,b.reg_Name,b.tag_name from `${dBname}`.qs_link_tj_info a,`${dBname}`.reg b where a.tj_id = #{tjId} and a.reg_id = b.reg_id
+    </select>
+    
+    <update id="updateLinkTjinfo">
+        update `${dBname}`.qs_link_tj_info 
+        set min_value = #{qslinktjinfo.minValue},max_value=#{qslinktjinfo.maxValue},relation=#{qslinktjinfo.relation}
+        where id=#{qslinktjinfo.id}
+    </update>
+    
+    <insert id="insertLinkTjinfo">
+        insert into `${dBname}`.qs_link_tj_info (tj_id, reg_id,min_value,max_value,relation)
+        values 
+			 <foreach collection="list" item="qslinktjinfo" separator=",">
+			(#{qslinktjinfo.tjId},#{qslinktjinfo.regId},#{qslinktjinfo.minValue},#{qslinktjinfo.maxValue},#{qslinktjinfo.relation})
+	 		</foreach>
+    </insert>
+    
+    <delete id="deleteLinkTjinfo">
+        delete
+        from `${dBname}`.qs_link_tj_info
+        where id in <foreach collection="ids" index="index" 
+				item="id" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+    </delete>
+    
+    <select id="findLinkJg" resultType="com.photonstudio.pojo.Qslinkjg">
+        select *
+        from `${dBname}`.qs_link_jg
+    </select>
+    
+    <insert id="insertLinkJg">
+        insert into `${dBname}`.qs_link_jg (jg_name) values (#{qslinkjg.jgName})
+    </insert>
+    
+    <update id="updateLinkJg">
+        update `${dBname}`.qs_link_jg set jg_name = #{qslinkjg.jgName} where jg_id=#{qslinkjg.jgId}
+    </update>
+    
+    <delete id="deleteLinkJg">
+        delete from `${dBname}`.qs_link_jg where jg_id=#{id};
+        delete from `${dBname}`.qs_link_jg_info where jg_id=#{id};
+    </delete>
+    
+    <select id="getCountJginfo" resultType="int">
+        select count(*) from `${dBname}`.qs_link_jg_info where  jg_id=#{jgId}
+    </select>
+    
+    <select id="findLinkJginfo" resultType="com.photonstudio.pojo.Qslinkjginfo">
+        select a.*,b.reg_Name,b.tag_name,c.jg_name from `${dBname}`.qs_link_jg_info a left join `${dBname}`.reg b on a.reg_id = b.reg_id left join `${dBname}`.qs_link_jg c on  a.jg_id=c.jg_id where  a.jg_id=#{jgId}   limit #{startIndex},#{pageSize}
+    </select>
+    
+    <select id="findLinkJginfoByJgid" resultType="com.photonstudio.pojo.Qslinkjginfo">
+        select a.*,b.reg_Name,e.jg_name,b.tag_name,d.picname from `${dBname}`.qs_link_jg_info a left join `${dBname}`.reg b on  a.reg_id = b.reg_id
+        left join `${dBname}`.pic d on d.picid= a.pic_id left join `${dBname}`.qs_link_jg e on e.jg_id=a.jg_id
+        where  a.jg_id=#{jgId}
+    </select>
+    
+    <insert id="insertLinkJginfo">
+        insert into `${dBname}`.qs_link_jg_info (jg_id, reg_id,value,sp_id,pic_id,pic_parameter,phone,message,reserve)
+        values 
+			 <foreach collection="list" item="qslinkjginfo" separator=",">
+			(#{qslinkjginfo.jgId},#{qslinkjginfo.regId},#{qslinkjginfo.value},#{qslinkjginfo.spId},#{qslinkjginfo.picId},
+			#{qslinkjginfo.picParameter},#{qslinkjginfo.phone},#{qslinkjginfo.message},#{qslinkjginfo.reserve})
+	 		</foreach>
+    </insert>
+    
+    <update id="updateLinkJginfo">
+        update `${dBname}`.qs_link_jg_info 
+        set value = #{qslinkjginfo.value} ,
+        sp_id=#{qslinkjginfo.spId},pic_id=#{qslinkjginfo.picId},pic_parameter=#{qslinkjginfo.picParameter}
+        where id=#{qslinkjginfo.id}
+        
+    </update>
+    
+    <delete id="deleteLinkJginfo">
+        delete
+        from `${dBname}`.qs_link_jg_info
+        where id in <foreach collection="ids" index="index" 
+				item="id" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+    </delete>
+    
+    <select id="getCountLinkRw" resultType="int">
+        select count(*) from `${dBname}`.qs_link_rw  
+        <where>
+        	1=1
+        	<if test="tjId!=null">
+        		and tj_id=#{tjId}
+        	</if>
+        	<if test="jgId!=null">
+        		and jg_id=#{jgId}
+        	</if>
+        </where>
+    </select>
+    
+    <select id="findLinkRw" resultType="com.photonstudio.pojo.Qslinkrw">
+        select a.*,b.tj_name,c.jg_name from `${dBname}`.qs_link_rw a, `${dBname}`.qs_link_tj b,`${dBname}`.qs_link_jg c
+        <where>
+        	a.tj_id = b.tj_id and a.jg_id = c.jg_id
+        	<if test="tjId!=null">
+        		and a.tj_id=#{tjId}
+        	</if>
+        	<if test="jgId!=null">
+        		and a.jg_id=#{jgId}
+        	</if>
+        	limit #{startIndex},#{pageSize}
+        </where>
+    </select>
+    
+    <select id="exportRw" resultType="com.photonstudio.pojo.Qslinkrw">
+        select a.*,b.tj_name,c.jg_name from `${dBname}`.qs_link_rw a, `${dBname}`.qs_link_tj b,`${dBname}`.qs_link_jg c
+        <where>
+        	a.tj_id = b.tj_id and a.jg_id = c.jg_id
+        	<if test="tjId!=null">
+        		and a.tj_id=#{tjId}
+        	</if>
+        	<if test="jgId!=null">
+        		and a.jg_id=#{jgId}
+        	</if>
+        </where>
+    </select>
+    
+    <insert id="insertLinkRw">
+        insert into `${dBnameRw}`.qs_link_rw (rw_name,tj_id,jg_id) values (#{qslinkrw.rwName},#{qslinkrw.tjId},#{qslinkrw.jgId})
+        <selectKey resultType="int" keyProperty="qslinkrw.rwId" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <update id="updateLinkRw">
+        update `${dBname}`.qs_link_rw 
+        set rw_name = #{qslinkrw.rwName},tj_id=#{qslinkrw.tjId},jg_id=#{qslinkrw.jgId}
+        where rw_id=#{qslinkrw.rwId}
+    </update>
+    
+    <delete id="deleteLinkRw">
+        delete
+        from `${dBname}`.qs_link_rw
+        where rw_id in <foreach collection="ids" index="index" 
+				item="id" open="(" close=")" separator=",">
+					#{id}
+				</foreach>
+    </delete>
+    
+    <select id="findLinkRwByRwid" resultType="com.photonstudio.pojo.Qslinkrw">
+        select * from `${dBname}`.qs_link_rw  where rw_id=#{rwId}
+    </select>
+    
+    <select id="findRegDbValue" resultType="String">
+        select tagvalue from `${dBname}`.qstag  where tagname=#{tagname}
+    </select>
+    
+    <select id="findQslinkrwList" resultType="com.photonstudio.pojo.Qslinkrw">
+        select * from `${dBname}`.qs_link_rw
+    </select>
+    <insert id="saveLog" >
+        insert into `${dBname}`.qs_link_log (rw_id,rw_name,jg_id,jg_name,reg_name,reg_value,sp_id,sp_name
+        ,pic_id,pic_name,pic_parameter,phone,message,sendtime,execute_state)  values (#{qsLinkLog.rwId},#{qsLinkLog.rwName},
+        #{qsLinkLog.jgId},#{qsLinkLog.jgName},#{qsLinkLog.regName},#{qsLinkLog.regValue},#{qsLinkLog.spId},
+        #{qsLinkLog.spName},#{qsLinkLog.picId},#{qsLinkLog.picName},#{qsLinkLog.picParameter},#{qsLinkLog.phone},
+        #{qsLinkLog.message},#{qsLinkLog.sendtime},#{qsLinkLog.executeState})
+    </insert>
+    <select id="findLogPage" resultType="QsLinkLog">
+        select * from `${dBname}`.qs_link_log
+        where
+        1=1
+        <if test="time!=null and time!=''">
+        and sendtime &gt;= #{time}
+        </if>
+        <if test="jgName!=null and jgName!=''">
+            and jg_name like concat("%",#{jgName},"%")
+        </if>
+        ORDER BY sendtime DESC
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getLogCount" resultType="int">
+         select count(*) from `${dBname}`.qs_link_log where
+           1=1
+        <if test="time!=null and time!=''">
+            and sendtime &gt;= #{time}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            and sendtime &gt;= #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''" >
+            and sendtime &lt;= #{endTime}
+        </if>
+    <if test="jgName!=null and jgName!=''">
+        and jg_name like concat("%",#{jgName},"%")
+    </if>
+    </select>
+
+
+
+    <select id="findByPage" resultType="QsLinkLog" parameterType="QsLinkLog">
+        select ${range} from ${dBname}
+        where
+        1=1
+        <if test="sendtime!=null and sendtime!=''">
+            and sendtime &gt;= #{time}
+        </if>
+        <if test="jgName!=null and jgName!=''">
+            and jg_name like concat("%",#{jgName},"%")
+        </if>
+        <if test="executeState!=null">
+            and execute_state  = #{executeState}
+        </if>
+        <if test="startTime!=null">
+            and sendtime &gt;= #{startTime}
+        </if>
+        <if test="endTime!=null" >
+            and sendtime &lt;= #{endTime}
+        </if>
+        <if test="rwName!=null and rwName!=''">
+            and rw_name like concat("%",#{rwName},"%")
+        </if>
+        ORDER BY sendtime DESC
+        <if test="startIndex !=null ">
+            limit #{startIndex},#{pageSize}
+        </if>
+
+    </select>
+
+    <select id="findBytjid" resultType="com.photonstudio.pojo.Qslinktj">
+        select * from `${dBname}`.qs_link_tj
+        <where>
+            <if test="tjid!=null and tjid!=''">
+                tj_id  in <foreach collection="tjid" index="index"
+                                   item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="countByQslinktj" resultType="int">
+        select count(*) from  `${dBname}`.qs_link_tj where tj_id=#{tjid}
+    </select>
+    <select id="findByid" resultType="com.photonstudio.pojo.Qslinkjg">
+        select * from `${dBname}`.qs_link_jg
+        <where>
+            <if test="ids != null and ids != '' ">
+                jg_id in
+                <foreach collection="ids "
+                         index="index"
+                         item="id"
+                         open="(" close=")"
+                         separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="countByJG" resultType="int">
+        select count(*) from `${dBname}`.qs_link_jg where jg_id=#{jgid}
+    </select>
+</mapper>

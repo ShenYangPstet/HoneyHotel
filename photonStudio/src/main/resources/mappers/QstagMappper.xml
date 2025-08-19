@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.QstagMapper">
+<select id="findObject" resultType="Qstag">
+	select a.*,b.drname ,c.itemname from `${dBname}`.qstag a left join `${dBname}`.dlldrinfo b
+	 on a.itemdrid=b.drid left join `${dBname}`.drlltype c on b.drllid=c.drllid and a.itemtype=c.itemtype
+	 <where>
+	 1=1
+	 <if test="tagname!=null and tagname!=''">
+	and a.tagname like concat("%",#{tagname},"%")
+	 </if>
+	 <if test="itemdrid!=null">
+	 and a.itemdrid=#{itemdrid}
+	 </if>
+	 order by a.tagid
+	 </where>
+	  <if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+      </if>
+</select>
+<select id="selectListForExcelExport" resultType="Qstag">
+	select a.*,b.drname ,c.itemname from `${dBname}`.qstag a left join `${dBname}`.dlldrinfo b
+	 on a.itemdrid=b.drid left join `${dBname}`.drlltype c on b.drllid=c.drllid and a.itemtype=c.itemtype
+	 <where>
+	 1=1
+	 <if test="tagname!=null and tagname!=''">
+	and a.tagname like concat("%",#{tagname},"%")
+	 </if>
+	 <if test="itemdrid!=null">
+	 and a.itemdrid=#{itemdrid}
+	 </if>
+	 order by a.tagid
+	 </where>
+	  
+	limit #{startIndex},10000
+      
+</select>
+<select id="getRowCount" resultType="int">
+select count(*) from `${dBname}`.qstag a
+	 <where>
+	 1=1
+	 <if test="tagname!=null and tagname!=''">
+	and a.tagname like concat("%",#{tagname},"%")
+	 </if>
+	 <if test="itemdrid!=null and itemdrid!=''">
+	 and itemdrid=#{itemdrid}
+	</if>
+	 </where>
+</select>
+<!-- 查询重复 -->
+<select id="selectCountByTagname" resultType="int">
+	select count(*) from `${dBname}`.qstag where tagname =#{tagname}
+</select>
+<select id="findObjectById" resultType="int">
+select count(*) from `${dBname}`.qstag where tagid=#{tagid} 
+</select>
+<select id="findTagnameById" resultType="string">
+select tagname from `${dBname}`.qstag where tagid=#{tagid}
+</select>
+<insert id="insertObject">
+insert into `${dBname}`.qstag (tagname,tagvalue,savetime,itemdrid,itemtype,itemid,itemdradd,itemreadtype,itemxs,valuetype) values
+(#{qstag.tagname},#{qstag.tagvalue},#{qstag.savetime},#{qstag.itemdrid},#{qstag.itemtype},#{qstag.itemid},#{qstag.itemdradd},#{qstag.itemreadtype},#{qstag.itemxs},#{qstag.valuetype})
+</insert>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.qstag 
+	<where>
+	tagid in 
+	 <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+         </where>
+</delete>
+<update id="updateObject">
+	update `${dBname}`.qstag 
+	<set>
+	 <if test="qstag.tagname!=null and qstag.tagname!=''">
+	tagname=#{qstag.tagname},
+	</if>
+	tagvalue=#{qstag.tagvalue},
+	savetime=#{qstag.savetime},
+	itemdrid=#{qstag.itemdrid},
+	itemtype=#{qstag.itemtype},
+	itemid=#{qstag.itemid},
+	itemdradd=#{qstag.itemdradd},
+	itemreadtype=#{qstag.itemreadtype},
+	itemxs=#{qstag.itemxs},
+	valuetype=#{qstag.valuetype}
+	</set>
+	<where>
+	tagid=#{qstag.tagid}
+	
+	</where>
+</update>
+<update id="updateObjectByTagname">
+	update `${dBname}`.qstag 
+	<set>
+	tagvalue=
+	  <foreach collection="list" item="qstag" index="index"
+                 separator=" " open="case tagname" close="end">
+                  when #{qstag.tagname} then #{qstag.tagvalue}
+                 </foreach>
+                  where tagname in 
+                   <foreach collection="list" open="("
+                close=")"
+                separator=","
+                item="qstag">
+                #{qstag.tagname}
+         </foreach> 
+	</set>
+</update>
+</mapper>

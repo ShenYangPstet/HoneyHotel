@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.DrtypemodeMapper">
+	<select id="findObject" resultType="com.photonstudio.pojo.Drtypemode">
+	select a.*,b.drtypename,c.subname,d.alarmtypename from `${dBname}`.drtypemode a 
+	left join `${dBname}`.drtypeinfo b on a.drtypeid=b.drtypeid 
+	left join `${dBname}`.sub c on a.reg_sub=c.subid 
+	left join `${dBname}`.alarmtype d on a.alarm_level=d.id
+	<where>
+	 <if test="drtypeid!=null and drtypeid">
+	 a.drtypeid=#{drtypeid}
+	 </if>
+	</where>
+	ORDER BY a.reg_listShowLevel 
+	<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+	</select>
+	   <select id="getRowCount" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.drtypemode
+       <where>
+		 <if test="drtypeid!=null and drtypeid!=''">
+		drtypeid=#{drtypeid}
+	     </if>
+	   </where>
+     </select>
+     <select id="findRowCountById" resultType="int">
+     SELECT COUNT(*) FROM `${dBname}`.drtypemode
+     <where>
+     typemodeid=#{typemodeid}
+     </where>
+     </select>
+<delete id="deleteObjectById">
+	delete from `${dBname}`.drtypemode 
+	<where>
+ 		typemodeid in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+</delete>     
+<insert id="insertObject">
+	insert into `${dBname}`.drtypemode  (drtypeid,reg_name,reg_type,reg_units,reg_readWrite,
+	tag_value,reg_listShowLevel,reg_sub,reg_drShowType,reg_drsub,ishistory,
+	Isenergy,isalarm,alarmtype,value_min,value_max,and_or,alarm_level,islistshow,tag_time,regcolor)
+ 	   values (#{drtypemode.drtypeid}, #{drtypemode.regName},#{drtypemode.regType},
+ 	   #{drtypemode.regUnits},#{drtypemode.regReadWrite},#{drtypemode.tagValue},
+ 	   #{drtypemode.regListShowLevel},#{drtypemode.regSub},#{drtypemode.regDrShowType},
+ 	   #{drtypemode.regDrsub},#{drtypemode.ishistory},#{drtypemode.isenergy},
+ 	   #{drtypemode.isalarm},#{drtypemode.alarmtype},#{drtypemode.valueMin},#{drtypemode.valueMax},
+ 	   #{drtypemode.andOr},#{drtypemode.alarmLevel},#{drtypemode.islistshow},
+ 	   #{drtypemode.tagTime},#{drtypemode.regcolor});
+</insert>
+<update id="updateObject">
+	update `${dBname}`.drtypemode 
+ 	<set>
+            
+                  drtypeid=#{drtypemode.drtypeid},
+             
+             
+                reg_name=#{drtypemode.regName},
+            
+                reg_type=#{drtypemode.regType},
+            
+                reg_units=#{drtypemode.regUnits},
+          
+                reg_readWrite=#{drtypemode.regReadWrite},
+             
+                tag_value=#{drtypemode.tagValue},
+            
+                reg_listShowLevel=#{drtypemode.regListShowLevel},
+            
+                reg_sub=#{drtypemode.regSub},
+             
+                reg_drShowType=#{drtypemode.regDrShowType},
+            
+                reg_drsub=#{drtypemode.regDrsub},
+             
+                ishistory=#{drtypemode.ishistory},
+            
+                isenergy=#{drtypemode.isenergy},
+           
+                isalarm=#{drtypemode.isalarm},
+           
+                alarmtype=#{drtypemode.alarmtype},
+             
+                value_min=#{drtypemode.valueMin},
+            
+                value_max=#{drtypemode.valueMax},
+            
+                and_or=#{drtypemode.andOr},
+
+                alarm_level=#{drtypemode.alarmLevel},
+            
+                islistshow=#{drtypemode.islistshow},
+            
+                tag_time=#{drtypemode.tagTime},
+                regcolor=#{drtypemode.regcolor}
+          </set>
+          where typemodeid=#{drtypemode.typemodeid} 
+</update>
+<update id="updateRegObject">
+	update `${dBname}`.reg 
+ 	<set>
+                reg_Name=CONCAT(substring_index(reg_name,':',1),':',#{drtypemode.regName}),
+                reg_Type=#{drtypemode.regType},
+            
+                reg_Units=#{drtypemode.regUnits},
+          
+                reg_ReadWrite=#{drtypemode.regReadWrite},
+             
+                tag_value=#{drtypemode.tagValue},
+            
+                reg_sub=#{drtypemode.regSub},
+             
+                reg_DrShowType=#{drtypemode.regDrShowType},
+            
+                reg_drsub=#{drtypemode.regDrsub},
+             
+                Ishistory=#{drtypemode.ishistory},
+            
+                Isenergy=#{drtypemode.isenergy},
+           
+                Isalarm=#{drtypemode.isalarm},
+           
+                alarmtype=#{drtypemode.alarmtype},
+             
+                value_min=#{drtypemode.valueMin},
+            
+                value_max=#{drtypemode.valueMax},
+            
+                and_or=#{drtypemode.andOr},
+
+                alarm_level=#{drtypemode.alarmLevel},
+            
+                tag_time=#{drtypemode.tagTime},
+
+                islistshow=#{drtypemode.islistshow},
+
+                regcolor=#{drtypemode.regcolor}
+          </set>
+          where dr_Id in (select DISTINCT drid from `${dBname}`.drinfo where drtypeid=#{drtypemode.drtypeid}) and reg_ListShowLevel=#{drtypemode.regListShowLevel}
+</update>
+<select id="queryCntDrinfo" resultType="int">
+  SELECT COUNT(*) FROM `${dBname}`.drinfo where drtypeid=#{drtypeid}
+</select>
+<insert id="insertReg">
+insert into `${dBname}`.reg (reg_Name,dr_Id,reg_Type,reg_Units,reg_ReadWrite,
+	reg_ListShowLevel,reg_sub,reg_DrShowType,reg_drsub,tag_value,Ishistory,Isenergy,Isalarm,
+	alarmtype,value_min,value_max,and_or,alarm_level,tag_time,islistshow)
+	select CONCAT(b.drname,':',a.reg_name) as reg_name,b.drid,a.reg_type,a.reg_units,a.reg_readWrite,a.reg_listShowLevel,a.reg_sub,a.reg_drShowType,a.reg_drsub,a.tag_value,a.ishistory,a.isenergy,a.isalarm,a.alarmtype,a.value_min,a.value_max,a.and_or,a.alarm_level,a.tag_time, a.islistshow
+	from `${dBname}`.drtypemode a,`${dBname}`.drinfo b where a.drtypeid=b.drtypeid and a.drtypeid=#{drtypeid} and a.reg_listShowLevel=#{regListShowLevel}
+</insert>
+<select id="queryDrtypemodeByid" resultType="com.photonstudio.pojo.Drtypemode">
+	select * from `${dBname}`.drtypemode where typemodeid=#{id}
+</select>
+<select id="findAllWriteByDrtypeid" resultType="com.photonstudio.pojo.Drtypemode">
+	select * from `${dBname}`.drtypemode where drtypeid=#{drtypeid} and reg_readWrite='2'
+</select>
+<select id="findAllRegByLevel" resultType="com.photonstudio.pojo.Reg">
+	select a.* from `${dBname}`.reg a,`${dBname}`.drinfo b where a.reg_ListShowLevel=#{regShowlevel} and a.dr_Id = b.drid and b.drtypeid=#{drtypeid};
+</select>
+<delete id="deleteJgtMode">
+	delete from `${dBname}`.jgtmode where typeid=#{drtypeid} and typemodelevel=#{regListShowLevel} 
+</delete>
+<delete id="deleteDrtypemodeById">
+	  delete from `${dBname}`.drtypemode where drtypeid=#{drtypeid}
+</delete>
+<delete id="deleteReg">
+	  delete from `${dBname}`.reg where dr_Id in (select drid from `${dBname}`.drinfo where drtypeid=#{drtypeid}) and reg_ListShowLevel=#{regListShowLevel}
+</delete>
+<update id="updateTypemodeValue">
+	update `${dBname}`.drtypemode set tag_value=#{value} where drtypeid=#{drtypeid} and reg_listShowLevel=#{regShowlevel}
+</update>
+</mapper>

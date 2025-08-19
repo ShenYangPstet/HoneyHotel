@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.photonstudio.mapper.MjSpMapper">
+    <select id="findMjID" resultType="string">
+        select mjid
+        from `${dBname}`.mj_sp
+        where mjid = #{mjid}
+    </select>
+    <update id="updateMjSp" parameterType="MjSp">
+        update `${dBname}`.mj_sp
+        set spid=#{mjsp.spid}
+        where mjid = #{mjsp.mjid}
+    </update>
+    <insert id="insertMjSp" parameterType="MjSp">
+        insert into `${dBname}`.mj_sp (mjid, spid)
+        values (#{mjsp.mjid}, #{mjsp.spid})
+    </insert>
+    <delete id="deleteMjSp">
+        delete
+        from `${dBname}`.mj_sp
+        where mjid = #{mjsp.mjid}
+    </delete>
+    <select id="findSpID" resultType="string">
+        select spid
+        from `${dBname}`.mj_sp
+        where mjid = #{mjid}
+    </select>
+</mapper>

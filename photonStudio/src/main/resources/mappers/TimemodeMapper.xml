@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.TimemodeMapper">
+  <select id="findObject" resultType="com.photonstudio.pojo.Timemode">
+   select * from `${dBname}`.timemode
+   limit #{startIndex},#{pageSize}
+  </select>
+  <select id="findObjectinfo" resultType="com.photonstudio.pojo.Timemodeinfo">
+   select a.*,b.timemodeName,c.ld_tj_name from `${dBname}`.timemodeinfo a left join `${dBname}`.timemode b on a.timemodeid=b.id LEFT JOIN `${dBname}`.qs_ld_tgr c on a.ld_tj_id=c.ld_tj_id
+   limit #{startIndex},#{pageSize}
+  </select>
+  <select id="findTimemodejob" resultType="com.photonstudio.pojo.YmdJob">
+	select DATE_FORMAT(time,'%Y-%m-%d') as ymd,timemodeid from `${dBname}`.timemodejob where DATE_FORMAT(time,'%Y%m')=#{yearMonth} group by DATE_FORMAT(time,'%Y%m%d'),timemodeid
+  </select>
+  <select id="findModeinfoByid" resultType="com.photonstudio.pojo.Timemodeinfo">
+   select * from `${dBname}`.timemodeinfo where timemodeid=#{id}
+  </select>
+  <select id="findModeinfoByTjIds" resultType="com.photonstudio.pojo.Timemodeinfo">
+   select * from `${dBname}`.timemodeinfo 
+   <where>
+   ld_tj_id in 
+   <foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+   </where>
+  </select>
+  <select id="findAllMode" resultType="com.photonstudio.pojo.Timemode">
+   select * from `${dBname}`.timemode
+  </select>
+  <select id="findAllTg" resultType="com.photonstudio.pojo.QsLdTgr">
+   select * from `${dBname}`.qs_ld_tgr where tj_type=2;
+  </select>
+  <select id="findTgByTjid" resultType="com.photonstudio.pojo.QsLdTgr">
+   select * from `${dBname}`.qs_ld_tgr where ld_tj_id=#{ldTjId};
+  </select>
+  <delete id="deleteObjectById">
+	delete from `${dBname}`.timemode 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+	</delete>
+	<delete id="deleteObjectinfoByModeIds">
+	delete from `${dBname}`.timemodeinfo
+	<where>
+	timemodeid in 
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</where>
+	</delete>
+	<delete id="deleteObjectinfoById">
+	delete from `${dBname}`.timemodeinfo 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+	</delete>
+	<delete id="deletemodejobBytime">
+	delete from `${dBname}`.timemodejob where DATE_FORMAT(time,'%Y-%m-%d')=#{ymd}
+	</delete>
+   <select id="getRowCount" resultType="int">
+   SELECT COUNT(*) FROM ${dBname}.timemode
+   </select>
+   <select id="getRowCountinfo" resultType="int">
+   SELECT COUNT(*) FROM ${dBname}.timemodeinfo
+   </select>
+   <select id="getRowCountjob" resultType="int">
+   SELECT COUNT(*) FROM ${dBname}.timemodejob
+   </select>
+ 	<insert id="save">
+ 	insert into ${dBname}.timemode (timemodeName,modeExplain) values (#{timemode.timemodeName},#{timemode.modeExplain});
+ 	</insert>
+ 	<insert id="saveinfo">
+ 	insert into ${dBname}.timemodeinfo (timemodeid,ld_tj_id) values (#{timemodeinfo.timemodeid},#{timemodeinfo.ldTjId});
+ 	</insert>
+ 	<insert id="savejob">
+	insert into `${dBname}`.timemodejob (timemodeid,ld_tj_id,time,ld_rw_id) values
+	(#{timemodejob.timemodeid},#{timemodejob.ldTjId},#{timemodejob.time},#{timemodejob.ldRwId})
+	</insert>
+ 	<update id="updateObject">
+ 	update `${dBname}`.timemode 
+ 	<set>
+ 			modeExplain=#{timemode.modeExplain},
+ 			modeExplain=#{timemode.modeExplain}
+ 	</set>
+ 	<where>
+ 			id=#{timemode.id}
+ 	</where>
+ 	</update>
+ 	<update id="updateObjectinfo">
+ 	update `${dBname}`.timemodeinfo 
+ 	<set>
+ 			timemodeid=#{timemodeinfo.timemodeid},
+ 			ld_tj_id=#{timemodeinfo.ldTjId}
+ 	</set>
+ 	<where>
+ 			id=#{timemodeinfo.id}
+ 	</where>
+ 	</update>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.TimemodejobMapper">
+	<select id="findObject" resultType="Timemodejob">
+		SELECT a.*,b.timemodeName,c.ld_tj_name,d.ld_rw_name FROM `${dBname}`.timemodejob a
+		left join `${dBname}`.timemode b on a.timemodeid=b.id 
+		left join `${dBname}`.qs_ld_tgr c on a.ld_tj_id=c.ld_tj_id 
+		left join `${dBname}`.qs_ld_rw d on a.ld_rw_id=d.ld_rw_id
+		<where>
+		1=1
+		<if test="time!=null and time!=''">
+		and date_format(a.time,'%Y-%m-%d') = #{time}
+		</if>
+		<if test="timemodeid!=null">
+		and timemodeid=#{timemodeid}
+		</if>
+		</where>
+		<if test="pageSize!=null and pageSize!=''">
+	limit #{startIndex},#{pageSize}
+	</if>
+	</select>
+	<select id="getRowCount" resultType="int">
+	SELECT count(*) FROM `${dBname}`.timemodejob
+	<where>
+		1=1
+		<if test="dayTime!=null and dayTime!=''">
+		and date_format(a.time,'%Y-%m-%d') = #{dayTime}
+		</if>
+		<if test="timemodeid!=null">
+		and timemodeid=#{timemodeid}
+		</if>
+		</where>
+	</select>
+	<select id="findObjectByLdRwIds" resultType="Timemodejob">
+	select * from `${dBname}`.timemodejob where ld_rw_id  in  
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</select>
+	<select id="findObjectByLdTjId" resultType="Timemodejob">
+	select * from `${dBname}`.timemodejob where ld_tj_id in 
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</select>
+	<select id="findObjectByTimemodeids" resultType="Timemodejob">
+	select * from `${dBname}`.timemodejob where timemodeidin 
+	<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+	</select>
+	<select id="findObjectById">
+	SELECT * FROM `${dBname}`.timemodejob where id= #{id}
+	</select>
+	<select id="findObjectByUseTime" resultType="Timemodejob">
+	SELECT * FROM `${dBname}`.timemodejob where time>now()
+	</select>
+	<delete id="deleteObjectByIds">
+	delete from `${dBname}`.timemodejob 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+	</delete>
+	<delete id="deleteObjectByDayTime">
+	delete from `${dBname}`.timemodejob 
+	<where>
+ 		date_format(a.time,'%Y-%m-%d') = #{dayTime}
+         </where>
+	</delete>
+	<insert id="insertObject">
+	insert into `${dBname}`.timemodejob (timemodeid,ld_tj_id,time,ld_rw_id) values
+	(#{timemodejob.timemodeid},#{timemodejob.ld_tj_id},#{timemodejob.time},#{timemodejob.ld_rw_id},)
+	</insert>
+	<update id="updateObject">
+	update `${dBname}`.timemodejob 
+	<set>
+	<if test="timemodejob.timemodeid!=null">
+	timemodeid =#{timemodejob.timemodeid},
+	</if>
+	<if test="timemodejob.ldTjId!=null">
+	 ld_tj_id=#{timemodejob.ldTjId},
+	</if>
+	<if test="timemodejob.time!=null">
+	time =#{timemodejob.time},
+	</if>
+	<if test="timemodejob.ldRwId!=null">
+	ld_rw_id =#{timemodejob.ldRwId},
+	</if>
+	id=#{timemodejob.id}
+	</set>
+	<where>
+	id=#{timemodejob.id}
+	</where>
+	</update>
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.ManufacturerMapper">
+<select id="findObject" resultType="Manufacturer">
+	select * from `${dBname}`.manufacturer 
+	<where>
+	 <if test="manufactorname!=null and manufactorname!=''">
+		 manufactorname like concat("%",#{manufactorname},"%")
+		</if>
+	</where>
+	<if test="pageSize!=null and pageSize!=''"> 
+	limit #{startIndex},#{pageSize} 
+	</if> 
+</select>
+<select id="getRowCount" resultType="int">
+	select count(*) from `${dBname}`.manufacturer 
+	<where>
+	 <if test="manufactorname!=null and manufactorname!=''">
+		 manufactorname like concat("%",#{manufactorname},"%")
+		</if>
+	</where>
+</select>
+<delete id="deleteObjectById">
+	
+	delete from `${dBname}`.manufacturer 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+</delete>
+<insert id="insertObject">
+insert into `${dBname}`.manufacturer (manufactorname,manufactorphone,origin) 
+values (#{manufacturer.manufactorname},#{manufacturer.manufactorphone},#{manufacturer.origin},)
+</insert>
+
+<update id="updateObject">
+	update `${dBname}`.manufacturer
+	<set>
+	manufactorname=#{manufacturer.manufactorname},
+	manufactorphone=#{manufacturer.manufactorphone},
+	origin=#{manufacturer.origin}
+	</set>
+	<where>
+	id=#{manufacturer.id}
+	</where>
+</update>
+</mapper>

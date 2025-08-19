@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.photonstudio.mapper.AlarmtypeMapper">
+<select id="findAll" resultType="com.photonstudio.pojo.Alarmtype">
+select * from `${dBname}`.alarmtype
+</select>
+<select id="findObject" resultType="com.photonstudio.pojo.Alarmtype">
+	select * from `${dBname}`.alarmtype
+	<if test="pageSize!=null">
+	limit #{startIndex},#{pageSize}
+	</if>
+</select>
+<select id="getRowCount" resultType="int">
+	SELECT COUNT(*) FROM `${dBname}`.alarmtype
+</select>
+<insert id="insertObject">
+	insert into `${dBname}`.alarmtype (alarmtypename,alarmtypelevel,alarmtypeExpain)
+	 values (#{alarmtype.alarmtypename},#{alarmtype.alarmtypelevel},#{alarmtype.alarmtypeExpain})
+</insert>
+	<delete id="deleteObjectById">
+	delete from `${dBname}`.alarmtype 
+	<where>
+ 		id in 
+ 		<foreach collection="ids" open="("
+                close=")"
+                separator=","
+                item="id">
+                #{id}
+         </foreach> 
+ 	</where>
+	</delete>
+	<update id="updateObject">
+	update `${dBname}`.alarmtype 
+	<set>
+	alarmtypename=#{alarmtype.alarmtypename},
+	alarmtypelevel=#{alarmtype.alarmtypelevel},
+	alarmtypeExpain=#{alarmtype.alarmtypeExpain}
+	</set> 
+	<where>
+		id=#{alarmtype.id}
+	</where>
+	</update>
+	
+	<select id="findcntByUserid" resultType="int">
+	SELECT COUNT(*) FROM `${dBname}`.user_alarmlevel where userid=#{userid}
+	</select>
+	<delete id="deleteByUserid">
+	delete from `${dBname}`.user_alarmlevel where userid=#{userid}
+	</delete>
+	<insert id="insertUserAlarm">
+	insert into `${dBname}`.user_alarmlevel (userid,alarmlevel)
+	 values (#{userid},#{alarmlevel})
+	</insert>
+	<select id="findUserAlarm" resultType="com.photonstudio.pojo.UserAlarmlevel">
+		select a.*,b.alarmtypename from `${dBname}`.user_alarmlevel a,`${dBname}`.alarmtype b where a.userid=#{userid} and a.alarmlevel=b.alarmtypelevel;
+	</select>
+</mapper>
