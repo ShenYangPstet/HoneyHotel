@@ -367,4 +367,21 @@ dr_Id in
 		</if>
 		</where>
 	</select>
+
+	<select id="findDrids" resultType="com.photonstudio.dataupload.vo.RegVO">
+		SELECT r.*,t.drtypeid FROM `${dBname}`.reg r LEFT JOIN `${dBname}`.drinfo d on d.drid=r.dr_Id LEFT JOIN `${dBname}`.drtypeinfo t on t.drtypeid= d.drtypeid
+		<where>
+			1=1
+			<if test="drIds!=null and drIds!='' ">
+				and	dr_Id=#{drIds}
+			</if>
+			<if test="regName !=null and regName!=''">
+				and reg_Name like CONCAT(CONCAT('%', #{regName}), '%')
+			</if>
+			<if test="drtypeid!=null and drtypeid!=''">
+				and t.drtypeid=#{drtypeid}
+			</if>
+		</where>
+		ORDER BY reg_ListShowLevel+0
+	</select>
 </mapper>

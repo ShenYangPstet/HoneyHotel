@@ -1,5 +1,6 @@
 package com.photonstudio.mapper;
 
+import com.photonstudio.dataupload.vo.RegVO;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -86,4 +87,6 @@ public interface RegMapper extends BaseMapper<Reg> {
 	List<RegSub> findRegValueByDrId(Integer drId);
 
     List<Reg> findRegByNameDrids(@Param("dBname")String dBname,@Param("regName") String regName, Integer[] drIds);
+
+	List<RegVO> findDrids(@Param("dBname")String dBname,@Param("drIds")Integer drIds,@Param("regName") String regName,@Param("drtypeid")Integer drtypeid);
 }

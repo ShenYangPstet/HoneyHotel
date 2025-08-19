@@ -11,6 +11,8 @@ import com.photonstudio.common.SessionUtil;
 import com.photonstudio.common.exception.ServiceException;
 import com.photonstudio.common.vo.PageObject;
 import com.photonstudio.common.vo.RegSub;
+import com.photonstudio.dataupload.req.DeviceReq;
+import com.photonstudio.dataupload.vo.DeviceVO;
 import com.photonstudio.mapper.*;
 import com.photonstudio.pojo.*;
 import com.photonstudio.pojo.req.DeviceListDataReq;
@@ -485,5 +487,35 @@ public class DrinfoServiceImpl implements DrinfoService {
           deviceRegDataList.add(deviceRegDate);
         });
     return new DeviceListDataVO().setDeviceRegDataList(deviceRegDataList).setHeaderList(headerList);
+  }
+
+
+
+  public PageInfo<DeviceVO> findDevicePage(DeviceReq deviceReq) {
+    PageHelper.startPage(deviceReq.getPageNum(), deviceReq.getPageSize());
+    List<DeviceVO> list =
+        drinfoMapper
+            .selectList(
+                new LambdaQueryWrapper<Drinfo>()
+                    .eq(
+                        ObjectUtil.isNotEmpty(deviceReq.getDrtypeid()),
+                        Drinfo::getDrtypeid,
+                        deviceReq.getDrtypeid()))
+            .stream()
+            .map(
+                drinfo -> {
+                  DeviceVO deviceVO = new DeviceVO();
+                  deviceVO.setDrid(drinfo.getDrid());
+                  deviceVO.setDrname(drinfo.getDrname());
+                  deviceVO.setDrtypeid(drinfo.getDrtypeid());
+                  deviceVO.setDrManufactureFactory(deviceVO.getDrManufactureStyle());
+                  deviceVO.setMdcode(deviceVO.getMdcode());
+                  deviceVO.setDrManufactureStyle(deviceVO.getDrManufactureStyle());
+                  deviceVO.setDrInstallPhone(deviceVO.getDrInstallPhone());
+                  deviceVO.setSpid(drinfo.getSpid());
+                  return deviceVO;
+                })
+            .collect(Collectors.toList());
+    return new PageInfo<>(list);
   }
 }

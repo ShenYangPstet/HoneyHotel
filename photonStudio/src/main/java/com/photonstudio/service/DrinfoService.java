@@ -1,5 +1,8 @@
 package com.photonstudio.service;
 
+import com.github.pagehelper.PageInfo;
+import com.photonstudio.dataupload.req.DeviceReq;
+import com.photonstudio.dataupload.vo.DeviceVO;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
@@ -46,4 +49,6 @@ public interface DrinfoService {
 	PageObject<Drinfo>  findByListPage(Drinfo drinfo);
 
 	DeviceListDataVO findDeviceList(DeviceListDataReq deviceListDataReq);
+
+	PageInfo<DeviceVO> findDevicePage(DeviceReq deviceReq);
 }

@@ -1,5 +1,8 @@
 package com.photonstudio.service;
 
+import com.github.pagehelper.PageInfo;
+import com.photonstudio.dataupload.req.RegReq;
+import com.photonstudio.dataupload.vo.RegVO;
 import java.util.List;
 import java.util.Map;
 
@@ -63,4 +66,6 @@ public interface RegService extends IExcelExportServer{
 	List<Reg> findRegByNameDrids(String dBname, String regName, Integer[] drIds);
 
 	Map<String, String> findTagValueByNames(String dBname, List<String> newList);
+
+  PageInfo<RegVO> findDeviceRegInfoPage(RegReq regReq);
 }

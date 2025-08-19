@@ -1,17 +1,24 @@
 package com.photonstudio.serviceImpl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.photonstudio.common.PagesUtil;
 import com.photonstudio.common.exception.ServiceException;
 import com.photonstudio.common.vo.PageObject;
 import com.photonstudio.common.vo.RegSub;
+import com.photonstudio.dataupload.req.RegReq;
+import com.photonstudio.dataupload.vo.RegVO;
 import com.photonstudio.mapper.QstagMapper;
 import com.photonstudio.mapper.RegMapper;
 import com.photonstudio.mapper.RegalarminfoMapper;
 import com.photonstudio.mapper.SubinfoMapper;
 import com.photonstudio.pojo.*;
 import com.photonstudio.service.RegService;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -24,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 public class RegServiceImpl implements RegService{
@@ -530,5 +539,37 @@ public class RegServiceImpl implements RegService{
 			map.put(qstag.getTagname(),qstag.getTagvalue());
 		}
 		return map;
+	}
+
+	public PageInfo<RegVO> findDeviceRegInfoPage(RegReq regReq) {
+		HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+		String database = request.getHeader("database");
+		PageHelper.startPage(regReq.getPageNum(), regReq.getPageSize());
+		List<RegVO> regList = regMapper.findDrids(database,regReq.getDrId(),null,regReq.getDrtypeid());
+		List<RegVO> RegVOList = new ArrayList<>();
+		Map<Integer,List<Subinfo>> subinfoListMap = subinfoMapper.selectList(null).stream().collect(
+				Collectors.groupingBy(Subinfo::getSubid));
+		Map<String, String> qsTagMap =
+				qstagMapper.selectList(null).stream()
+						.collect(Collectors.toMap(Qstag::getTagname, Qstag::getTagvalue));
+		if (ObjectUtil.isNotEmpty(regList)) {
+			for (RegVO reg : regList) {
+
+				if (ObjectUtil.isNotEmpty(reg.getTagName())) {
+					reg.setNewtagvalue(qsTagMap.get(reg.getTagName()));
+				}
+				if (ObjectUtil.isNotEmpty(reg.getRegSub())) {
+					List<Subinfo> subinfoList = subinfoListMap.get(Integer.parseInt(reg.getRegSub()));
+					Map<String,String> SubMap = subinfoList.stream().collect(Collectors.toMap(Subinfo::getValue,Subinfo::getText));
+					if (ObjectUtil.isNotEmpty(reg.getNewtagvalue())){
+						reg.setSubname(SubMap.get(reg.getNewtagvalue()));
+					}else {
+						reg.setSubname(SubMap.get(reg.getTagValue()));
+					}
+				}
+
+			}
+		}
+		return new PageInfo<>(regList);
 	}
 }
